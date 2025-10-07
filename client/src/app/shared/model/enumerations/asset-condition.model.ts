@@ -1,0 +1,9 @@
+export enum AssetCondition {
+  GOOD = 'GOOD',
+
+  MINOR_DAMAGE = 'MINOR_DAMAGE',
+
+  OUT_OF_SERVICE = 'OUT_OF_SERVICE',
+
+  NEEDS_SERVICE = 'NEEDS_SERVICE',
+}

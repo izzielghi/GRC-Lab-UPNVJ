@@ -1,0 +1,158 @@
+/**
+ * =========================================================
+ * ENUMERATIONS - Tipe Data Tetap
+ * =========================================================
+ */
+enum AssetCondition {
+    GOOD,
+    MINOR_DAMAGE,
+    OUT_OF_SERVICE,
+    NEEDS_SERVICE // Untuk memicu reminder otomatis
+}
+
+enum IncidentType {
+    DAMAGE_TO_ASSET,
+    PERSONAL_INJURY,
+    NEAR_MISS
+}
+
+enum BookingStatus {
+    PENDING,
+    APPROVED,
+    REJECTED,
+    CANCELLED,
+    COMPLETED
+}
+
+/**
+ * =========================================================
+ * ENTITAS TATA KELOLA & RISIKO (RISK MANAGEMENT)
+ * =========================================================
+ */
+
+/** Alat atau perangkat keras di laboratorium */
+entity Asset {
+    name String required,
+    code String required unique,
+    location String,
+    condition AssetCondition,
+    purchaseDate LocalDate,
+    warrantyEndDate LocalDate
+}
+
+/** Catatan Pemakaian Alat */
+entity UsageLog {
+    dateTime ZonedDateTime required,
+    purpose String required,
+    duration Integer min(1) // dalam menit
+}
+
+/** Riwayat Pemeliharaan dan Servis Alat (Monitoring Kondisi Alat) */
+entity MaintenanceRecord {
+    date LocalDate required,
+    description TextBlob required,
+    cost BigDecimal,
+    nextServiceDate LocalDate // Untuk reminder otomatis
+}
+
+entity Booking {
+    startTime ZonedDateTime required,
+    endTime ZonedDateTime required,
+    purpose String required,
+    status BookingStatus
+}
+
+/** Pelaporan Insiden (Kerusakan/Kecelakaan) */
+entity Incident {
+    title String required,
+    description TextBlob required,
+    type IncidentType required,
+    date ZonedDateTime required,
+    mitigationAction TextBlob // Tindakan penanggulangan yang telah dilakukan
+}
+
+/**
+ * =========================================================
+ * ENTITAS KEPATUHAN (COMPLIANCE)
+ * =========================================================
+ */
+
+/** Dokumentasi SOP & Aturan */
+entity SOP {
+    title String required,
+    documentPath String required, // Lokasi atau path file SOP
+    version String,
+    isActive Boolean
+}
+
+/** Checklist Kepatuhan (Misalnya, sebelum/sesudah Praktikum) */
+entity ComplianceChecklist {
+    name String required,
+    dateTime ZonedDateTime,
+    isCompleted Boolean required
+}
+
+/** Item-item spesifik dalam Checklist Kepatuhan */
+entity ChecklistItem {
+    description String required,
+    isCompliant Boolean
+}
+
+// Tambahkan entitas pinjam ruangan
+entity Room {
+    name String required,
+    code String required unique,
+    capacity Integer,
+    locationDetails String
+}
+
+
+/**
+ * =========================================================
+ * HUBUNGAN (RELATIONSHIPS)
+ * =========================================================
+ */
+
+// Hubungan Aset ke Log dan Insiden (Satu Aset punya banyak Log/Insiden)
+relationship OneToMany {
+    Asset to UsageLog{asset required},
+    Asset to MaintenanceRecord{asset required},
+    Asset to Incident{asset required}
+}
+
+// Hubungan ke Pengguna (User - sudah disediakan JHipster)
+// Menggunakan 'with builtInEntity' untuk entitas bawaan JHipster
+relationship ManyToOne {
+    UsageLog to User{user required} with builtInEntity,
+    Incident to User{reporter required} with builtInEntity,
+    MaintenanceRecord to User{maintainer required} with builtInEntity
+}
+
+// Hubungan Checklist (Satu Checklist bisa punya banyak Item)
+relationship OneToMany {
+    ComplianceChecklist to ChecklistItem{checklist required}
+}
+
+// Hubungan Aset ke SOP (Banyak Aset ke Banyak SOP)
+relationship ManyToMany {
+    Asset to SOP{rule}
+}
+
+// Tambahkan hubungan ManyToOne dari UsageLog ke Room
+relationship ManyToOne {
+    UsageLog to Room{room required}
+}
+
+relationship OneToMany {
+    Room to Booking{room(name) required}
+}
+
+// Satu User bisa membuat banyak Peminjaman
+relationship ManyToOne {
+    Booking{user(login) required} to User with builtInEntity
+}
+
+// Set pagination untuk semua entitas
+paginate * with infinite-scroll
+// Set service class untuk semua entitas (dibuat di NestJS)
+service * with serviceClass

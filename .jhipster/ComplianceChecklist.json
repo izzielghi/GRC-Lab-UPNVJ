@@ -1,0 +1,36 @@
+{
+  "annotations": {
+    "changelogDate": "20251007022324"
+  },
+  "applications": "*",
+  "documentation": "Checklist Kepatuhan (Misalnya, sebelum/sesudah Praktikum)",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "dateTime",
+      "fieldType": "ZonedDateTime"
+    },
+    {
+      "fieldName": "isCompleted",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "ComplianceChecklist",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityName": "checklistItem",
+      "otherEntityRelationshipName": "checklist",
+      "relationshipName": "checklistItem",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

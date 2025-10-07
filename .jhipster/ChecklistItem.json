@@ -1,0 +1,31 @@
+{
+  "annotations": {
+    "changelogDate": "20251007022325"
+  },
+  "applications": "*",
+  "documentation": "Item-item spesifik dalam Checklist Kepatuhan",
+  "fields": [
+    {
+      "fieldName": "description",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "isCompliant",
+      "fieldType": "Boolean"
+    }
+  ],
+  "name": "ChecklistItem",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityName": "complianceChecklist",
+      "relationshipName": "checklist",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

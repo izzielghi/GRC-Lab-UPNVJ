@@ -1,0 +1,71 @@
+{
+  "annotations": {
+    "changelogDate": "20251007022319"
+  },
+  "applications": "*",
+  "documentation": "Alat atau perangkat keras di laboratorium",
+  "fields": [
+    {
+      "fieldName": "name",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "code",
+      "fieldType": "String",
+      "fieldValidateRules": ["required", "unique"]
+    },
+    {
+      "fieldName": "location",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "condition",
+      "fieldType": "AssetCondition",
+      "fieldTypeDocumentation": "=========================================================\\nENUMERATIONS - Tipe Data Tetap\\n=========================================================",
+      "fieldValues": "GOOD,MINOR_DAMAGE,OUT_OF_SERVICE,NEEDS_SERVICE"
+    },
+    {
+      "fieldName": "purchaseDate",
+      "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "warrantyEndDate",
+      "fieldType": "LocalDate"
+    }
+  ],
+  "name": "Asset",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityName": "usageLog",
+      "otherEntityRelationshipName": "asset",
+      "relationshipName": "usageLog",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "maintenanceRecord",
+      "otherEntityRelationshipName": "asset",
+      "relationshipName": "maintenanceRecord",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "incident",
+      "otherEntityRelationshipName": "asset",
+      "relationshipName": "incident",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "sOP",
+      "otherEntityRelationshipName": "rule",
+      "relationshipName": "sOP",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

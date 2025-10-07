@@ -1,0 +1,33 @@
+{
+  "generator-jhipster": {
+    "applicationType": "monolith",
+    "authenticationType": "jwt",
+    "backendType": "NodeJS",
+    "baseName": "eLab",
+    "blueprints": [
+      {
+        "name": "generator-jhipster-nodejs",
+        "version": "3.2.0"
+      }
+    ],
+    "clientFramework": "react",
+    "clientTestFrameworks": [],
+    "clientTheme": "none",
+    "creationTimestamp": 1759747956221,
+    "databaseType": "sql",
+    "enableTranslation": false,
+    "entities": ["Asset", "UsageLog", "MaintenanceRecord", "Incident", "SOP", "ComplianceChecklist", "ChecklistItem", "Room", "Booking"],
+    "jhipsterVersion": "8.10.0",
+    "lastLiquibaseTimestamp": 1759810137000,
+    "microfrontend": null,
+    "microfrontends": [],
+    "nativeLanguage": "id",
+    "prodDatabaseType": "mysql",
+    "serverPort": null,
+    "testFrameworks": [],
+    "withAdminUi": false
+  },
+  "generator-jhipster-nodejs": {
+    "nodejsVersion": "3.2.0"
+  }
+}

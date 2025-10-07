@@ -1,0 +1,7 @@
+export enum IncidentType {
+  DAMAGE_TO_ASSET = 'DAMAGE_TO_ASSET',
+
+  PERSONAL_INJURY = 'PERSONAL_INJURY',
+
+  NEAR_MISS = 'NEAR_MISS',
+}

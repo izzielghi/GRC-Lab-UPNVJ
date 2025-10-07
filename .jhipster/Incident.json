@@ -1,0 +1,55 @@
+{
+  "annotations": {
+    "changelogDate": "20251007022322"
+  },
+  "applications": "*",
+  "documentation": "Pelaporan Insiden (Kerusakan/Kecelakaan)",
+  "fields": [
+    {
+      "fieldName": "title",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "TextBlob",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "type",
+      "fieldType": "IncidentType",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "DAMAGE_TO_ASSET,PERSONAL_INJURY,NEAR_MISS"
+    },
+    {
+      "fieldName": "date",
+      "fieldType": "ZonedDateTime",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "mitigationAction",
+      "fieldType": "TextBlob"
+    }
+  ],
+  "name": "Incident",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityName": "user",
+      "otherEntityRelationshipName": "reporter",
+      "relationshipName": "user",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipWithBuiltInEntity": true
+    },
+    {
+      "otherEntityName": "asset",
+      "relationshipName": "asset",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

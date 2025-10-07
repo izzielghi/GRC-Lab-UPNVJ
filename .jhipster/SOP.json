@@ -1,0 +1,39 @@
+{
+  "annotations": {
+    "changelogDate": "20251007022323"
+  },
+  "applications": "*",
+  "documentation": "Dokumentasi SOP & Aturan",
+  "fields": [
+    {
+      "fieldName": "title",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "documentPath",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "version",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "isActive",
+      "fieldType": "Boolean"
+    }
+  ],
+  "name": "SOP",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityName": "asset",
+      "relationshipName": "rule",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-many"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}
