@@ -14,19 +14,19 @@ import { getEntities, reset } from './booking.reducer';
 
 export const Booking = () => {
   const dispatch = useAppDispatch();
-
   const pageLocation = useLocation();
 
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
-  const [sorting, setSorting] = useState(false);
 
   const bookingList = useAppSelector(state => state.booking.entities);
   const loading = useAppSelector(state => state.booking.loading);
   const links = useAppSelector(state => state.booking.links);
+  const totalItems = useAppSelector(state => state.booking.totalItems);
   const updateSuccess = useAppSelector(state => state.booking.updateSuccess);
 
+  // GANTI SEMUA KODE DARI SINI...
   const getAllEntities = () => {
     dispatch(
       getEntities({
@@ -39,52 +39,48 @@ export const Booking = () => {
 
   const resetAll = () => {
     dispatch(reset());
-    setPaginationState({
-      ...paginationState,
+    setPaginationState(prevState => ({
+      ...prevState,
       activePage: 1,
-    });
-    dispatch(getEntities({}));
+    }));
   };
 
   useEffect(() => {
+    // Saat komponen pertama kali dimuat, reset semuanya.
     resetAll();
   }, []);
 
   useEffect(() => {
+    // Setelah update berhasil (create/edit), reset semuanya.
     if (updateSuccess) {
       resetAll();
     }
   }, [updateSuccess]);
 
   useEffect(() => {
+    // useEffect UTAMA: Ambil data setiap kali paginationState berubah.
+    // Karena resetAll() mengubah paginationState, ini akan otomatis
+    // mengambil data baru setelah reset.
     getAllEntities();
-  }, [paginationState.activePage]);
+  }, [paginationState.activePage, paginationState.order, paginationState.sort]);
 
   const handleLoadMore = () => {
-    if ((window as any).pageYOffset > 0) {
-      setPaginationState({
-        ...paginationState,
-        activePage: paginationState.activePage + 1,
-      });
+    if ((window as any).pageYOffset > 0 && paginationState.activePage - 1 < links.next) {
+      setPaginationState(prevState => ({
+        ...prevState,
+        activePage: prevState.activePage + 1,
+      }));
     }
   };
 
-  useEffect(() => {
-    if (sorting) {
-      getAllEntities();
-      setSorting(false);
-    }
-  }, [sorting]);
-
   const sort = p => () => {
     dispatch(reset());
-    setPaginationState({
-      ...paginationState,
+    setPaginationState(prevState => ({
+      ...prevState,
       activePage: 1,
-      order: paginationState.order === ASC ? DESC : ASC,
+      order: prevState.order === ASC ? DESC : ASC,
       sort: p,
-    });
-    setSorting(true);
+    }));
   };
 
   const handleSyncList = () => {
@@ -99,6 +95,9 @@ export const Booking = () => {
     }
     return order === ASC ? faSortUp : faSortDown;
   };
+  // ...SAMPAI SEBELUM BARIS 'return ('
+
+  // Kode 'return (...)' Anda tidak perlu diubah
 
   return (
     <div>

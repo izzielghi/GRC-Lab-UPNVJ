@@ -2,10 +2,11 @@ import { HttpException, HttpStatus, Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { FindManyOptions, FindOneOptions, Repository } from 'typeorm';
 import { Booking } from '../domain/booking.entity';
-import { User } from '../domain/user.entity'; // <-- 1. IMPORT User
+import { User } from '../domain/user.entity';
 import { BookingDTO } from '../service/dto/booking.dto';
 import { BookingMapper } from '../service/mapper/booking.mapper';
 import { Request } from 'express';
+import { BookingStatus } from '../domain/enumeration/booking-status'; // Pastikan ini diimpor
 
 const relations = {
   user: true,
@@ -18,14 +19,13 @@ export class BookingService {
 
   constructor(
     @InjectRepository(Booking) private bookingRepository: Repository<Booking>,
-    @InjectRepository(User) private userRepository: Repository<User>, // <-- 2. INJEKSI UserRepository
+    @InjectRepository(User) private userRepository: Repository<User>,
   ) {}
 
+  // ... (Fungsi findById, findByFields, findAndCount tidak perlu diubah)
+
   async findById(id: number): Promise<BookingDTO | undefined> {
-    const result = await this.bookingRepository.findOne({
-      relations,
-      where: { id },
-    });
+    const result = await this.bookingRepository.findOne({ relations, where: { id } });
     return BookingMapper.fromEntityToDTO(result);
   }
 
@@ -39,12 +39,8 @@ export class BookingService {
     const isAdmin = currentUser.authorities.includes('ROLE_ADMIN');
 
     if (!isAdmin) {
-      options.where = {
-        ...options.where,
-        user: { login: currentUser.login },
-      };
+      options.where = { ...options.where, user: { login: currentUser.login } };
     }
-
     const resultList = await this.bookingRepository.findAndCount({ ...options, relations });
     const bookingDTO: BookingDTO[] = [];
     if (resultList && resultList[0]) {
@@ -54,43 +50,55 @@ export class BookingService {
     return resultList;
   }
 
-  // 👇 ==================================================================
-  // FUNGSI INI YANG KITA MODIFIKASI SECARA SIGNIFIKAN
-  // 👇 ==================================================================
+  // 👇 ================================================================
+  // FUNGSI SAVE: Hanya untuk MEMBUAT data baru
+  // 👇 ================================================================
   async save(bookingDTO: BookingDTO, creatorLogin?: string): Promise<BookingDTO | undefined> {
     const entity = BookingMapper.fromDTOtoEntity(bookingDTO);
 
-    // Jika ini adalah data baru, hubungkan dengan pengguna yang sedang login
-    if (creatorLogin && !entity.id) {
-      const creator = await this.userRepository.findOne({ where: { login: creatorLogin } });
-      if (creator) {
-        entity.user = creator; // <-- 3. HUBUNGKAN ENTITAS USER
-      }
-
-      // Atur audit fields
-      entity.createdBy = creatorLogin;
+    // 1. Hubungkan dengan pengguna yang membuat
+    const creator = await this.userRepository.findOne({ where: { login: creatorLogin } });
+    if (creator) {
+      entity.user = creator;
     }
 
-    // Atur lastModifiedBy untuk create dan update
-    if (creatorLogin) {
-      entity.lastModifiedBy = creatorLogin;
-    }
+    // 2. PAKSA status default menjadi PENDING
+    entity.status = BookingStatus.PENDING;
+
+    // 3. Atur audit fields untuk data baru
+    entity.createdBy = creatorLogin;
+    entity.lastModifiedBy = creatorLogin;
 
     const result = await this.bookingRepository.save(entity);
     return BookingMapper.fromEntityToDTO(result);
   }
-  // 👆 ==================================================================
-  // AKHIR DARI MODIFIKASI
-  // 👆 ==================================================================
 
-  async update(bookingDTO: BookingDTO, updater?: string): Promise<BookingDTO | undefined> {
-    const entity = BookingMapper.fromDTOtoEntity(bookingDTO);
-    if (updater) {
-      entity.lastModifiedBy = updater;
+  // 👇 ================================================================
+  // FUNGSI UPDATE: Hanya untuk MENGUBAH data yang sudah ada
+  // 👇 ================================================================
+  async update(bookingDTO: BookingDTO, updaterLogin?: string): Promise<BookingDTO | undefined> {
+    this.logger.log(`Menerima DTO untuk update: ${JSON.stringify(bookingDTO, null, 2)}`);
+
+    // 1. AMBIL data yang sudah ada dari database
+    const existingBooking = await this.bookingRepository.findOne({ where: { id: bookingDTO.id } });
+    if (!existingBooking) {
+      throw new HttpException('Booking tidak ditemukan!', HttpStatus.NOT_FOUND);
     }
-    const result = await this.bookingRepository.save(entity);
+
+    // 2. GABUNGKAN perubahan dari form ke data yang sudah ada
+    // Ini memastikan field seperti 'createdBy' dan 'user' tidak hilang
+    const updatedEntity = {
+      ...existingBooking, // Ambil semua data lama
+      ...BookingMapper.fromDTOtoEntity(bookingDTO), // Timpa dengan data baru dari form
+      lastModifiedBy: updaterLogin, // Perbarui field 'lastModifiedBy'
+    };
+
+    // 3. SIMPAN entitas yang sudah digabung
+    const result = await this.bookingRepository.save(updatedEntity);
     return BookingMapper.fromEntityToDTO(result);
   }
+
+  // ... (Fungsi deleteById tidak perlu diubah)
 
   async deleteById(id: number): Promise<void | undefined> {
     await this.bookingRepository.delete(id);
