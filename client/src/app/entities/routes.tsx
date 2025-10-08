@@ -28,7 +28,7 @@ export default () => {
         <Route path="sop/*" element={<SOP />} />
         <Route path="compliance-checklist/*" element={<ComplianceChecklist />} />
         <Route path="room/*" element={<Room />} />
-        import Booking from './booking'; /* jhipster-needle-add-route-import - JHipster will add routes here */
+        {/* jhipster-needle-add-route-import - JHipster will add routes here */}
         {/* ========================================================================= */}
         {/* 2. ROUTE YANG HANYA BOLEH DIAKSES ADMIN (Manajemen Data Inti) */}
         {/* ========================================================================= */}

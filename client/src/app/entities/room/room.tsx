@@ -25,6 +25,8 @@ export const Room = () => {
   const loading = useAppSelector(state => state.room.loading);
   const links = useAppSelector(state => state.room.links);
   const updateSuccess = useAppSelector(state => state.room.updateSuccess);
+  const account = useAppSelector(state => state.authentication.account);
+  const isAdmin = account?.authorities?.includes('ROLE_ADMIN');
 
   const getAllEntities = () => {
     dispatch(

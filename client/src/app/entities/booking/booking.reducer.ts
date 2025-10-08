@@ -77,7 +77,7 @@ export const BookingSlice = createEntitySlice({
   name: 'booking',
   initialState,
   reducers: {
-    reset: state => {
+    reset(state) {
       // Kembalikan state ke kondisi awal (kosong)
       Object.assign(state, initialState);
     },
