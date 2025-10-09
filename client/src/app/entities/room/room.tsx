@@ -13,13 +13,15 @@ import { getEntities, reset } from './room.reducer';
 
 export const Room = () => {
   const dispatch = useAppDispatch();
-
   const pageLocation = useLocation();
 
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
-  const [sorting, setSorting] = useState(false);
+
+  const [refreshCounter, setRefreshCounter] = useState(0);
+
+  // State 'sorting' tidak lagi diperlukan
 
   const roomList = useAppSelector(state => state.room.entities);
   const loading = useAppSelector(state => state.room.loading);
@@ -44,21 +46,25 @@ export const Room = () => {
       ...paginationState,
       activePage: 1,
     });
+    setRefreshCounter(count => count + 1);
   };
 
+  // useEffect untuk me-reset saat pertama kali halaman dimuat
   useEffect(() => {
     resetAll();
   }, []);
 
+  // useEffect untuk me-reset setelah ada update (create/edit/delete)
   useEffect(() => {
     if (updateSuccess) {
       resetAll();
     }
   }, [updateSuccess]);
 
+  // HANYA ADA SATU useEffect UTAMA untuk mengambil data
   useEffect(() => {
     getAllEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort]);
+  }, [paginationState.activePage, paginationState.order, paginationState.sort, refreshCounter]);
 
   const handleLoadMore = () => {
     if ((window as any).pageYOffset > 0) {
@@ -69,22 +75,14 @@ export const Room = () => {
     }
   };
 
-  useEffect(() => {
-    if (sorting) {
-      getAllEntities();
-      setSorting(false);
-    }
-  }, [sorting]);
-
+  // Fungsi sort yang lebih sederhana
   const sort = p => () => {
-    dispatch(reset());
-    setPaginationState({
-      ...paginationState,
-      activePage: 1,
-      order: paginationState.order === ASC ? DESC : ASC,
+    resetAll();
+    setPaginationState(prevState => ({
+      ...prevState,
+      order: prevState.order === ASC ? DESC : ASC,
       sort: p,
-    });
-    setSorting(true);
+    }));
   };
 
   const handleSyncList = () => {
