@@ -8,32 +8,6 @@ import { AUTHORITIES } from 'app/config/constants';
 const EntitiesMenu = (props: any) => {
   return (
     <>
-      {/* ========================================================= */}
-      {/* 1. FITUR UTAMA MAHASISWA (ROLE_USER) */}
-      {/* ========================================================= */}
-      {/* Menu yang boleh diakses semua ROLE_USER (Mahasiswa/Teknisi) */}
-      <MenuItem icon="plus-circle" to="/usage-log">
-        Peminjaman Alat & Ruang Lab {/* Ubah label agar lebih jelas */}
-      </MenuItem>
-      <MenuItem icon="plus-circle" to="/incident">
-        Pelaporan Insiden
-      </MenuItem>
-      <MenuItem icon="list" to="/compliance-checklist">
-        Checklist Kepatuhan
-      </MenuItem>
-      <MenuItem icon="book" to="/sop">
-        Dokumentasi SOP
-      </MenuItem>
-      <MenuItem icon="database" to="/asset">
-        Informasi Aset
-      </MenuItem>
-      <MenuItem icon="asterisk" to="/room">
-        Room
-      </MenuItem>
-
-      {/* ========================================================= */}
-      {/* 2. FITUR ADMINISTRASI/MANAJEMEN (Hanya ROLE_ADMIN) */}
-      {/* ========================================================= */}
       {hasAnyAuthority(props.isAuthenticated, [AUTHORITIES.ADMIN]) && (
         <>
           <MenuItem icon="tools" to="/maintenance-record">
@@ -45,6 +19,9 @@ const EntitiesMenu = (props: any) => {
           </MenuItem>
         </>
       )}
+      <MenuItem icon="asterisk" to="/room">
+        Room
+      </MenuItem>
       <MenuItem icon="asterisk" to="/asset">
         Asset
       </MenuItem>

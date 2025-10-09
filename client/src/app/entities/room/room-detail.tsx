@@ -12,6 +12,8 @@ export const RoomDetail = () => {
   const dispatch = useAppDispatch();
 
   const { id } = useParams<'id'>();
+  const account = useAppSelector(state => state.authentication.account);
+  const isAdmin = account?.authorities?.includes('ROLE_ADMIN');
 
   useEffect(() => {
     dispatch(getEntity(id));
@@ -48,9 +50,11 @@ export const RoomDetail = () => {
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Kembali</span>
         </Button>
         &nbsp;
-        <Button tag={Link} to={`/room/${roomEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
-        </Button>
+        {isAdmin && (
+          <Button tag={Link} to={`/room/${roomEntity.id}/edit`} replace color="primary">
+            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
+          </Button>
+        )}
       </Col>
     </Row>
   );

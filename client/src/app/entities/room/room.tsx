@@ -44,7 +44,6 @@ export const Room = () => {
       ...paginationState,
       activePage: 1,
     });
-    dispatch(getEntities({}));
   };
 
   useEffect(() => {
@@ -59,7 +58,7 @@ export const Room = () => {
 
   useEffect(() => {
     getAllEntities();
-  }, [paginationState.activePage]);
+  }, [paginationState.activePage, paginationState.order, paginationState.sort]);
 
   const handleLoadMore = () => {
     if ((window as any).pageYOffset > 0) {
@@ -109,10 +108,12 @@ export const Room = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          <Link to="/room/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp; Buat Room baru
-          </Link>
+          {isAdmin && ( // <-- TAMBAHKAN KONDISI INI
+            <Link to="/room/new" className="btn btn-primary jh-create-entity">
+              <FontAwesomeIcon icon="plus" />
+              &nbsp; Buat Room baru
+            </Link>
+          )}
         </div>
       </h2>
       <div className="table-responsive">
@@ -161,17 +162,21 @@ export const Room = () => {
                         <Button tag={Link} to={`/room/${room.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                           <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">Lihat</span>
                         </Button>
-                        <Button tag={Link} to={`/room/${room.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
-                          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
-                        </Button>
-                        <Button
-                          onClick={() => (window.location.href = `/room/${room.id}/delete`)}
-                          color="danger"
-                          size="sm"
-                          data-cy="entityDeleteButton"
-                        >
-                          <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Hapus</span>
-                        </Button>
+                        {isAdmin && (
+                          <>
+                            <Button tag={Link} to={`/room/${room.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
+                              <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
+                            </Button>
+                            <Button
+                              onClick={() => (window.location.href = `/room/${room.id}/delete`)}
+                              color="danger"
+                              size="sm"
+                              data-cy="entityDeleteButton"
+                            >
+                              <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Hapus</span>
+                            </Button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
