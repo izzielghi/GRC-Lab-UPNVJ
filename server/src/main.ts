@@ -1,3 +1,6 @@
+import * as crypto from 'crypto';
+(global as any).crypto = crypto;
+
 require('dotenv').config({ path: '.env' });
 import * as fs from 'fs';
 import { NestFactory } from '@nestjs/core';
