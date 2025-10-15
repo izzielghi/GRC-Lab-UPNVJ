@@ -90,12 +90,13 @@ export const AssetSlice = createEntitySlice({
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data, headers } = action.payload;
         const links = parseHeaderForLinks(headers.link);
+        const page = action.meta.arg.page;
 
         return {
           ...state,
           loading: false,
           links,
-          entities: loadMoreDataWhenScrolled(state.entities, data, links),
+          entities: page === 0 ? data : loadMoreDataWhenScrolled(state.entities, data, links),
           totalItems: parseInt(headers['x-total-count'], 10),
         };
       })

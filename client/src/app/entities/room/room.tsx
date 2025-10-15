@@ -20,9 +20,6 @@ export const Room = () => {
   );
 
   const [refreshCounter, setRefreshCounter] = useState(0);
-
-  // State 'sorting' tidak lagi diperlukan
-
   const roomList = useAppSelector(state => state.room.entities);
   const loading = useAppSelector(state => state.room.loading);
   const links = useAppSelector(state => state.room.links);
@@ -49,19 +46,16 @@ export const Room = () => {
     setRefreshCounter(count => count + 1);
   };
 
-  // useEffect untuk me-reset saat pertama kali halaman dimuat
   useEffect(() => {
     resetAll();
   }, []);
 
-  // useEffect untuk me-reset setelah ada update (create/edit/delete)
   useEffect(() => {
     if (updateSuccess) {
       resetAll();
     }
   }, [updateSuccess]);
 
-  // HANYA ADA SATU useEffect UTAMA untuk mengambil data
   useEffect(() => {
     getAllEntities();
   }, [paginationState.activePage, paginationState.order, paginationState.sort, refreshCounter]);
@@ -75,7 +69,6 @@ export const Room = () => {
     }
   };
 
-  // Fungsi sort yang lebih sederhana
   const sort = p => () => {
     resetAll();
     setPaginationState(prevState => ({
@@ -106,7 +99,7 @@ export const Room = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          {isAdmin && ( // <-- TAMBAHKAN KONDISI INI
+          {isAdmin && (
             <Link to="/room/new" className="btn btn-primary jh-create-entity">
               <FontAwesomeIcon icon="plus" />
               &nbsp; Buat Room baru
@@ -119,7 +112,7 @@ export const Room = () => {
           dataLength={roomList ? roomList.length : 0}
           next={handleLoadMore}
           hasMore={paginationState.activePage - 1 < links.next}
-          loader={<div className="loader">Loading ...</div>}
+          loader={<div className="loader"></div>}
         >
           {roomList && roomList.length > 0 ? (
             <Table responsive>
