@@ -31,8 +31,7 @@ export const getUsersAsAdmin = createAsyncThunk('userManagement/fetch_users_as_a
 });
 
 export const getRoles = createAsyncThunk('userManagement/fetch_roles', async () => {
-  const response = await axios.get<any[]>(`api/authorities`);
-  response.data = response?.data?.map(authority => authority.name);
+  const response = await axios.get<any[]>(`api/admin/users/authorities`);
   return response;
 });
 

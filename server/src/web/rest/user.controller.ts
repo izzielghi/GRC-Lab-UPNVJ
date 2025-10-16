@@ -31,6 +31,20 @@ export class UserController {
 
   constructor(private readonly userService: UserService) {}
 
+  @Get('/authorities')
+  @UseGuards(AuthGuard, RolesGuard)
+  @Roles(RoleType.ADMIN)
+  @ApiOperation({ summary: 'Get all authorities' })
+  @ApiResponse({
+    status: 200,
+    description: 'List of authorities',
+    type: 'string',
+    isArray: true,
+  })
+  async getAuthorities(@Req() req: Request): Promise<string[]> {
+    return await this.userService.getAuthorities();
+  }
+
   @Get('/')
   @Roles(RoleType.ADMIN)
   @ApiOperation({ summary: 'Get the list of users' })

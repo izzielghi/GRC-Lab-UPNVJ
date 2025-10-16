@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, FormText, Row } from 'reactstrap';
 import { ValidatedField, ValidatedForm, isEmail } from 'react-jhipster';
@@ -7,6 +7,11 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 import { createUser, getRoles, getUser, reset, updateUser } from './user-management.reducer';
 
+const roleDisplayMap = {
+  ROLE_ADMIN: 'Admin',
+  ROLE_USER: 'User',
+};
+
 export const UserManagementUpdate = () => {
   const dispatch = useAppDispatch();
 
@@ -14,34 +19,42 @@ export const UserManagementUpdate = () => {
 
   const { login } = useParams<'login'>();
   const isNew = login === undefined;
-
-  useEffect(() => {
-    if (isNew) {
-      dispatch(reset());
-    } else {
-      dispatch(getUser(login));
-    }
-    dispatch(getRoles());
-    return () => {
-      dispatch(reset());
-    };
-  }, [login]);
-
+  const [selectedRoles, setSelectedRoles] = useState([]);
   const handleClose = () => {
     navigate('/admin/user-management');
   };
+  const user = useAppSelector(state => state.userManagement.user);
+
+  useEffect(() => {
+    dispatch(getRoles());
+    if (!isNew) {
+      dispatch(getUser(login));
+    }
+    // ...
+  }, [login]);
+
+  useEffect(() => {
+    if (!isNew && user && user.authorities) {
+      setSelectedRoles(user.authorities);
+    }
+  }, [user]);
 
   const saveUser = values => {
+    // Gabungkan data form dengan peran yang kita kelola secara manual
+    const finalUserData = {
+      ...values,
+      authorities: selectedRoles,
+    };
+
     if (isNew) {
-      dispatch(createUser(values));
+      dispatch(createUser(finalUserData)); // Kirim data yang sudah lengkap
     } else {
-      dispatch(updateUser(values));
+      dispatch(updateUser(finalUserData)); // Kirim data yang sudah lengkap
     }
     handleClose();
   };
 
   const isInvalid = false;
-  const user = useAppSelector(state => state.userManagement.user);
   const loading = useAppSelector(state => state.userManagement.loading);
   const updating = useAppSelector(state => state.userManagement.updating);
   const authorities = useAppSelector(state => state.userManagement.authorities);
@@ -127,14 +140,33 @@ export const UserManagementUpdate = () => {
                   validate: v => isEmail(v) || 'Email anda tidak valid.',
                 }}
               />
-              <ValidatedField type="checkbox" name="activated" check value={true} disabled={!user.id} label="Aktifkan" />
-              <ValidatedField type="select" name="authorities" multiple label="Profil">
-                {authorities.map(role => (
-                  <option value={role} key={role}>
-                    {role}
-                  </option>
-                ))}
-              </ValidatedField>
+              <div className="mb-3">
+                <label className="form-label">Profil</label>
+                <div>
+                  {authorities.map(role => (
+                    <div className="form-check" key={role}>
+                      <input
+                        className="form-check-input"
+                        type="checkbox"
+                        id={`role-${role}`}
+                        value={role}
+                        checked={selectedRoles.includes(role)}
+                        onChange={() => {
+                          // Logika untuk menambah/menghapus peran dari state
+                          if (selectedRoles.includes(role)) {
+                            setSelectedRoles(selectedRoles.filter(r => r !== role));
+                          } else {
+                            setSelectedRoles([...selectedRoles, role]);
+                          }
+                        }}
+                      />
+                      <label className="form-check-label" htmlFor={`role-${role}`}>
+                        {roleDisplayMap[role] || role}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              </div>
               <Button tag={Link} to="/admin/user-management" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

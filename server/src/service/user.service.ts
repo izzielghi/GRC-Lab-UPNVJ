@@ -5,12 +5,21 @@ import { User } from '../domain/user.entity';
 import { transformPassword } from '../security';
 import { UserDTO } from './dto/user.dto';
 import { UserMapper } from './mapper/user.mapper';
+import { RoleType } from '../security';
+import { Authority } from '../domain/authority.entity';
 
 const relations = { authorities: true } as const;
 
 @Injectable()
 export class UserService {
-  constructor(@InjectRepository(User) private userRepository: Repository<User>) {}
+  constructor(
+    @InjectRepository(User) private userRepository: Repository<User>,
+    @InjectRepository(Authority) private authorityRepository: Repository<Authority>,
+  ) {}
+
+  async getAuthorities(): Promise<string[]> {
+    return Object.values(RoleType);
+  }
 
   async findById(id: number): Promise<UserDTO | undefined> {
     const result = await this.userRepository.findOneBy({ id });
@@ -38,7 +47,15 @@ export class UserService {
   }
 
   async save(userDTO: UserDTO, creator?: string, updatePassword = false): Promise<UserDTO | undefined> {
-    const user = this.convertInAuthorities(UserMapper.fromDTOtoEntity(userDTO));
+    const user = UserMapper.fromDTOtoEntity(userDTO);
+
+    // --- BLOK LOGIKA BARU UNTUK MENANGANI PERAN ---
+    if (userDTO.authorities) {
+      const foundAuthorities = await this.authorityRepository.findByIds(userDTO.authorities);
+      user.authorities = foundAuthorities;
+    }
+    // --- BATAS BLOK LOGIKA BARU ---
+
     if (!userDTO.id || userDTO.id === 0) {
       delete user.id;
     }
