@@ -8,11 +8,14 @@ import { APP_LOCAL_DATE_FORMAT } from 'app/config/constants';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntity } from './asset.reducer';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 export const AssetDetail = () => {
   const dispatch = useAppDispatch();
 
   const { id } = useParams<'id'>();
+
+  const authorities = useAppSelector(state => state.authentication.account.authorities);
 
   useEffect(() => {
     dispatch(getEntity(id));
@@ -76,9 +79,11 @@ export const AssetDetail = () => {
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Kembali</span>
         </Button>
         &nbsp;
-        <Button tag={Link} to={`/asset/${assetEntity.id}/edit`} replace color="primary">
-          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
-        </Button>
+        {hasAnyAuthority(authorities, ['ROLE_ADMIN']) && (
+          <Button tag={Link} to={`/asset/${assetEntity.id}/edit`} replace color="primary">
+            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
+          </Button>
+        )}
       </Col>
     </Row>
   );

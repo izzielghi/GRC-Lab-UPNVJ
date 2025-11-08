@@ -11,6 +11,7 @@ import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-u
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
 import { getEntities, reset } from './asset.reducer';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 export const Asset = () => {
   const dispatch = useAppDispatch();
@@ -100,6 +101,8 @@ export const Asset = () => {
     return order === ASC ? faSortUp : faSortDown;
   };
 
+  const authorities = useAppSelector(state => state.authentication.account.authorities);
+
   return (
     <div>
       <h2 id="asset-heading" data-cy="AssetHeading">
@@ -108,10 +111,12 @@ export const Asset = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          <Link to="/asset/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-            <FontAwesomeIcon icon="plus" />
-            &nbsp; Buat Asset baru
-          </Link>
+          {hasAnyAuthority(authorities, ['ROLE_ADMIN']) && (
+            <Link to="/asset/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+              <FontAwesomeIcon icon="plus" />
+              &nbsp; Buat Asset baru
+            </Link>
+          )}
         </div>
       </h2>
       <div className="table-responsive">
@@ -155,11 +160,7 @@ export const Asset = () => {
               <tbody>
                 {assetList.map((asset, i) => (
                   <tr key={`entity-${i}`} data-cy="entityTable">
-                    <td>
-                      <Button tag={Link} to={`/asset/${asset.id}`} color="link" size="sm">
-                        {asset.id}
-                      </Button>
-                    </td>
+                    <td>{asset.id}</td>
                     <td>{asset.name}</td>
                     <td>{asset.code}</td>
                     <td>{asset.condition}</td>
@@ -178,17 +179,21 @@ export const Asset = () => {
                         <Button tag={Link} to={`/asset/${asset.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                           <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">Lihat</span>
                         </Button>
-                        <Button tag={Link} to={`/asset/${asset.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
-                          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
-                        </Button>
-                        <Button
-                          onClick={() => (window.location.href = `/asset/${asset.id}/delete`)}
-                          color="danger"
-                          size="sm"
-                          data-cy="entityDeleteButton"
-                        >
-                          <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Hapus</span>
-                        </Button>
+                        {hasAnyAuthority(authorities, ['ROLE_ADMIN']) && (
+                          <Button tag={Link} to={`/asset/${asset.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
+                            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
+                          </Button>
+                        )}
+                        {hasAnyAuthority(authorities, ['ROLE_ADMIN']) && (
+                          <Button
+                            onClick={() => (window.location.href = `/asset/${asset.id}/delete`)}
+                            color="danger"
+                            size="sm"
+                            data-cy="entityDeleteButton"
+                          >
+                            <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Hapus</span>
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>

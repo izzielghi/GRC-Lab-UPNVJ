@@ -87,15 +87,24 @@ export const SOPSlice = createEntitySlice({
         state.updateSuccess = true;
         state.entity = {};
       })
+      // GANTI DENGAN BLOK INI:
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data, headers } = action.payload;
         const links = parseHeaderForLinks(headers.link);
+
+        // Ambil nomor halaman dari argumen action
+        const page = action.meta.arg.page;
+
+        // Kita GANTI data jika ini halaman 0 (dari tabel)
+        // ATAU jika halaman tidak ditentukan (undefined, dari dropdown).
+        // Kita HANYA MENAMBAH jika halaman > 0 (untuk infinite scroll).
+        const shouldReplaceData = page === 0 || page === undefined;
 
         return {
           ...state,
           loading: false,
           links,
-          entities: loadMoreDataWhenScrolled(state.entities, data, links),
+          entities: shouldReplaceData ? data : [...state.entities, ...data],
           totalItems: parseInt(headers['x-total-count'], 10),
         };
       })

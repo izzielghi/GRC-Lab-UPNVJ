@@ -1,4 +1,5 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
+import Select from 'react-select';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Button, Col, Row } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
@@ -27,6 +28,12 @@ export const AssetUpdate = () => {
   const updating = useAppSelector(state => state.asset.updating);
   const updateSuccess = useAppSelector(state => state.asset.updateSuccess);
   const assetConditionValues = Object.keys(AssetCondition);
+  const [selectedRules, setSelectedRules] = useState([]);
+
+  const sopOptions = sOPS.map(sop => ({
+    value: sop.id.toString(),
+    label: sop.title,
+  }));
 
   const handleClose = () => {
     navigate('/asset');
@@ -47,6 +54,25 @@ export const AssetUpdate = () => {
     }
   }, [updateSuccess]);
 
+  useEffect(() => {
+    if (updateSuccess) {
+      handleClose();
+    }
+  }, [updateSuccess]);
+
+  // TAMBAHKAN BLOK useEffect BARU INI
+  // Ini untuk mengisi 'selectedRules' saat membuka halaman Edit
+  useEffect(() => {
+    if (!isNew && assetEntity?.rules) {
+      // Ubah data 'rules' dari server menjadi format react-select
+      const initialRules = assetEntity.rules.map(sop => ({
+        value: sop.id.toString(),
+        label: sop.title,
+      }));
+      setSelectedRules(initialRules);
+    }
+  }, [isNew, assetEntity.rules]); // Pantau perubahan pada assetEntity.rules
+
   const saveEntity = values => {
     if (values.id !== undefined && typeof values.id !== 'number') {
       values.id = Number(values.id);
@@ -56,7 +82,8 @@ export const AssetUpdate = () => {
       ...assetEntity,
       ...values,
       location: rooms.find(it => it.id.toString() === values.location?.toString()),
-      rules: mapIdList(values.rules),
+      // Ambil data dari 'selectedRules' dan ubah kembali ke format yang benar
+      rules: selectedRules.map(option => ({ id: option.value })),
     };
 
     if (isNew) {
@@ -73,7 +100,7 @@ export const AssetUpdate = () => {
           condition: 'GOOD',
           ...assetEntity,
           location: assetEntity?.location?.id,
-          rules: assetEntity?.rules?.map(e => e.id.toString()),
+          // 'rules' sekarang ditangani oleh useEffect dan useState
         };
 
   return (
@@ -138,16 +165,22 @@ export const AssetUpdate = () => {
                     ))
                   : null}
               </ValidatedField>
-              <ValidatedField label="Rule" id="asset-rule" data-cy="rule" type="select" multiple name="rules">
-                <option value="" key="0" />
-                {sOPS
-                  ? sOPS.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.title}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
+              <div className="mb-3">
+                <label htmlFor="asset-rule" className="form-label">
+                  Rule
+                </label>
+                <Select
+                  id="asset-rule"
+                  data-cy="rule"
+                  isMulti
+                  name="rules"
+                  options={sopOptions}
+                  className="basic-multi-select"
+                  classNamePrefix="select"
+                  value={selectedRules}
+                  onChange={newValue => setSelectedRules(newValue ? [...newValue] : [])}
+                />
+              </div>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/asset" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;
