@@ -90,12 +90,15 @@ export const RoomSlice = createEntitySlice({
       .addMatcher(isFulfilled(getEntities), (state, action) => {
         const { data, headers } = action.payload;
         const links = parseHeaderForLinks(headers.link);
+        // PERIKSA APAKAH INI PANGGILAN HALAMAN PERTAMA (PAGE 0)
+        const isFirstPage = action.meta.arg.page === 0;
 
         return {
           ...state,
           loading: false,
           links,
-          entities: loadMoreDataWhenScrolled(state.entities, data, links),
+          // JIKA HALAMAN PERTAMA, GANTI DATA. JIKA BUKAN, TAMBAHKAN DATA (infinite scroll)
+          entities: isFirstPage ? data : [...state.entities, ...data],
           totalItems: parseInt(headers['x-total-count'], 10),
         };
       })

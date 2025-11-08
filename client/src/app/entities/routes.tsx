@@ -6,7 +6,6 @@ import { AUTHORITIES } from 'app/config/constants';
 import ErrorBoundaryRoutes from 'app/shared/error/error-boundary-routes';
 
 import Asset from './asset';
-import UsageLog from './usage-log';
 import MaintenanceRecord from './maintenance-record';
 import Incident from './incident';
 import SOP from './sop';
@@ -25,7 +24,6 @@ export default () => {
         {/* 1. ROUTE YANG BOLEH DIAKSES SEMUA ORANG (ROLE_USER & ROLE_ADMIN) */}
         {/* ========================================================================= */}
         <Route path="asset/*" element={<Asset />} />
-        <Route path="usage-log/*" element={<UsageLog />} />
         <Route path="incident/*" element={<Incident />} />
         <Route path="sop/*" element={<SOP />} />
         <Route path="compliance-checklist/*" element={<ComplianceChecklist />} />

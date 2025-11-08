@@ -3,7 +3,6 @@ import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 't
 import { BaseEntity } from './base/base.entity';
 
 import { Booking } from './booking.entity';
-import { UsageLog } from './usage-log.entity';
 
 /**
  * A Room.
@@ -27,9 +26,6 @@ export class Room extends BaseEntity {
 
   @ManyToMany(type => Booking)
   bookings?: Booking[];
-
-  @OneToMany(type => UsageLog, other => other.room)
-  rooms?: UsageLog[];
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

@@ -4,7 +4,6 @@ import { IsNotEmpty } from 'class-validator';
 import { BaseDTO } from './base.dto';
 
 import { BookingDTO } from './booking.dto';
-import { UsageLogDTO } from './usage-log.dto';
 
 /**
  * A RoomDTO object.
@@ -28,8 +27,6 @@ export class RoomDTO extends BaseDTO {
 
   @ApiProperty({ type: () => BookingDTO, isArray: true, description: 'bookings relationship' })
   bookings?: BookingDTO[];
-  @ApiProperty({ type: () => UsageLogDTO, isArray: true, description: 'rooms relationship' })
-  rooms?: UsageLogDTO[];
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

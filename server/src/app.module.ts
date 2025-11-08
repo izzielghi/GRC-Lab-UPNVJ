@@ -5,7 +5,6 @@ import { AuthModule } from './module/auth.module';
 import { ormConfig } from './orm.config';
 import { config } from './config';
 import { AssetModule } from './module/asset.module';
-import { UsageLogModule } from './module/usage-log.module';
 import { MaintenanceRecordModule } from './module/maintenance-record.module';
 import { IncidentModule } from './module/incident.module';
 import { SOPModule } from './module/sop.module';
@@ -27,7 +26,6 @@ import { RecordItemModule } from './module/record-item.module';
     }),
     AuthModule,
     AssetModule,
-    UsageLogModule,
     MaintenanceRecordModule,
     IncidentModule,
     SOPModule,

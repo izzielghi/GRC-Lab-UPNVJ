@@ -25,9 +25,6 @@ const EntitiesMenu = (props: any) => {
       <MenuItem icon="asterisk" to="/asset">
         Asset
       </MenuItem>
-      <MenuItem icon="asterisk" to="/usage-log">
-        Usage Log
-      </MenuItem>
       <MenuItem icon="asterisk" to="/maintenance-record">
         Maintenance Record
       </MenuItem>

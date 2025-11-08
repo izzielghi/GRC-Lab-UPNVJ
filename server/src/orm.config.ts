@@ -4,7 +4,6 @@ import { CreateTables1570200270081 } from './migrations/1570200270081-CreateTabl
 import { User } from './domain/user.entity';
 import { Authority } from './domain/authority.entity';
 import { Asset } from './domain/asset.entity';
-import { UsageLog } from './domain/usage-log.entity';
 import { MaintenanceRecord } from './domain/maintenance-record.entity';
 import { Incident } from './domain/incident.entity';
 import { SOP } from './domain/sop.entity';
@@ -73,7 +72,6 @@ function ormConfig(): TypeOrmModuleOptions {
       User,
       Authority,
       Asset,
-      UsageLog,
       MaintenanceRecord,
       Incident,
       SOP,

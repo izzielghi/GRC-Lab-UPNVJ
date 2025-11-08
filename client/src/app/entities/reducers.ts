@@ -1,5 +1,4 @@
 import asset from 'app/entities/asset/asset.reducer';
-import usageLog from 'app/entities/usage-log/usage-log.reducer';
 import maintenanceRecord from 'app/entities/maintenance-record/maintenance-record.reducer';
 import incident from 'app/entities/incident/incident.reducer';
 import sOP from 'app/entities/sop/sop.reducer';
@@ -13,7 +12,6 @@ import recordItem from 'app/entities/record-item/record-item.reducer';
 
 const entitiesReducers = {
   asset,
-  usageLog,
   maintenanceRecord,
   incident,
   sOP,
