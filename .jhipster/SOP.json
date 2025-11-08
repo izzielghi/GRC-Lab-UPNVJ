@@ -3,7 +3,6 @@
     "changelogDate": "20251007022323"
   },
   "applications": "*",
-  "documentation": "Dokumentasi SOP & Aturan",
   "fields": [
     {
       "fieldName": "title",
@@ -20,8 +19,10 @@
       "fieldType": "String"
     },
     {
-      "fieldName": "isActive",
-      "fieldType": "Boolean"
+      "fieldName": "status",
+      "fieldType": "SOPStatus",
+      "fieldValidateRules": ["required"],
+      "fieldValues": "AKTIF,ARSIP"
     }
   ],
   "name": "SOP",
@@ -29,7 +30,8 @@
   "relationships": [
     {
       "otherEntityName": "asset",
-      "relationshipName": "rule",
+      "otherEntityRelationshipName": "rule",
+      "relationshipName": "asset",
       "relationshipSide": "right",
       "relationshipType": "many-to-many"
     }

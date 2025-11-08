@@ -14,6 +14,8 @@ import ComplianceChecklist from './compliance-checklist';
 import ChecklistItem from './checklist-item';
 import Room from './room';
 import Booking from './booking';
+import ComplianceRecord from './compliance-record';
+import RecordItem from './record-item';
 
 export default () => {
   return (
@@ -51,6 +53,8 @@ export default () => {
         <Route path="maintenance-record/*" element={<MaintenanceRecord />} />
         <Route path="checklist-item/*" element={<ChecklistItem />} />
         <Route path="booking/*" element={<Booking />} />
+        <Route path="compliance-record/*" element={<ComplianceRecord />} />
+        <Route path="record-item/*" element={<RecordItem />} />
         {/* jhipster-needle-add-route-path - JHipster will add routes here */}
       </ErrorBoundaryRoutes>
     </div>

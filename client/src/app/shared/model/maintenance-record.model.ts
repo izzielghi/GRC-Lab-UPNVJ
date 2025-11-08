@@ -8,7 +8,7 @@ export interface IMaintenanceRecord {
   description?: string;
   cost?: number | null;
   nextServiceDate?: dayjs.Dayjs | null;
-  user?: IUser | null;
+  maintainer?: IUser;
   asset?: IAsset;
 }
 

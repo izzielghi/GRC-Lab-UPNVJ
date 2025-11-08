@@ -20,14 +20,12 @@ export const Asset = () => {
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
+  const [sorting, setSorting] = useState(false);
 
-  const [refreshCounter, setRefreshCounter] = useState(0);
   const assetList = useAppSelector(state => state.asset.entities);
   const loading = useAppSelector(state => state.asset.loading);
   const links = useAppSelector(state => state.asset.links);
   const updateSuccess = useAppSelector(state => state.asset.updateSuccess);
-  const account = useAppSelector(state => state.authentication.account);
-  const isAdmin = account?.authorities?.includes('ROLE_ADMIN');
 
   const getAllEntities = () => {
     dispatch(
@@ -45,7 +43,7 @@ export const Asset = () => {
       ...paginationState,
       activePage: 1,
     });
-    setRefreshCounter(count => count + 1);
+    dispatch(getEntities({}));
   };
 
   useEffect(() => {
@@ -60,7 +58,7 @@ export const Asset = () => {
 
   useEffect(() => {
     getAllEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort, refreshCounter]);
+  }, [paginationState.activePage]);
 
   const handleLoadMore = () => {
     if ((window as any).pageYOffset > 0) {
@@ -71,13 +69,22 @@ export const Asset = () => {
     }
   };
 
+  useEffect(() => {
+    if (sorting) {
+      getAllEntities();
+      setSorting(false);
+    }
+  }, [sorting]);
+
   const sort = p => () => {
-    resetAll();
-    setPaginationState(prevState => ({
-      ...prevState,
-      order: prevState.order === ASC ? DESC : ASC,
+    dispatch(reset());
+    setPaginationState({
+      ...paginationState,
+      activePage: 1,
+      order: paginationState.order === ASC ? DESC : ASC,
       sort: p,
-    }));
+    });
+    setSorting(true);
   };
 
   const handleSyncList = () => {
@@ -101,12 +108,10 @@ export const Asset = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          {isAdmin && (
-            <Link to="/asset/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
-              <FontAwesomeIcon icon="plus" />
-              &nbsp; Buat Asset baru
-            </Link>
-          )}
+          <Link to="/asset/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp; Buat Asset baru
+          </Link>
         </div>
       </h2>
       <div className="table-responsive">
@@ -114,7 +119,7 @@ export const Asset = () => {
           dataLength={assetList ? assetList.length : 0}
           next={handleLoadMore}
           hasMore={paginationState.activePage - 1 < links.next}
-          loader={<div className="loader"></div>}
+          loader={<div className="loader">Loading ...</div>}
         >
           {assetList && assetList.length > 0 ? (
             <Table responsive>
@@ -129,9 +134,6 @@ export const Asset = () => {
                   <th className="hand" onClick={sort('code')}>
                     Code <FontAwesomeIcon icon={getSortIconByFieldName('code')} />
                   </th>
-                  <th className="hand" onClick={sort('location')}>
-                    Location <FontAwesomeIcon icon={getSortIconByFieldName('location')} />
-                  </th>
                   <th className="hand" onClick={sort('condition')}>
                     Condition <FontAwesomeIcon icon={getSortIconByFieldName('condition')} />
                   </th>
@@ -140,6 +142,12 @@ export const Asset = () => {
                   </th>
                   <th className="hand" onClick={sort('warrantyEndDate')}>
                     Warranty End Date <FontAwesomeIcon icon={getSortIconByFieldName('warrantyEndDate')} />
+                  </th>
+                  <th className="hand" onClick={sort('description')}>
+                    Description <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
+                  </th>
+                  <th>
+                    Location <FontAwesomeIcon icon="sort" />
                   </th>
                   <th />
                 </tr>
@@ -154,7 +162,6 @@ export const Asset = () => {
                     </td>
                     <td>{asset.name}</td>
                     <td>{asset.code}</td>
-                    <td>{asset.location}</td>
                     <td>{asset.condition}</td>
                     <td>
                       {asset.purchaseDate ? <TextFormat type="date" value={asset.purchaseDate} format={APP_LOCAL_DATE_FORMAT} /> : null}
@@ -164,26 +171,24 @@ export const Asset = () => {
                         <TextFormat type="date" value={asset.warrantyEndDate} format={APP_LOCAL_DATE_FORMAT} />
                       ) : null}
                     </td>
+                    <td>{asset.description}</td>
+                    <td>{asset.location ? <Link to={`/room/${asset.location.id}`}>{asset.location.name}</Link> : ''}</td>
                     <td className="text-end">
                       <div className="btn-group flex-btn-group-container">
                         <Button tag={Link} to={`/asset/${asset.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                           <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">Lihat</span>
                         </Button>
-                        {isAdmin && (
-                          <>
-                            <Button tag={Link} to={`/asset/${asset.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
-                              <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
-                            </Button>
-                            <Button
-                              onClick={() => (window.location.href = `/asset/${asset.id}/delete`)}
-                              color="danger"
-                              size="sm"
-                              data-cy="entityDeleteButton"
-                            >
-                              <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Hapus</span>
-                            </Button>
-                          </>
-                        )}
+                        <Button tag={Link} to={`/asset/${asset.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
+                          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
+                        </Button>
+                        <Button
+                          onClick={() => (window.location.href = `/asset/${asset.id}/delete`)}
+                          color="danger"
+                          size="sm"
+                          data-cy="entityDeleteButton"
+                        >
+                          <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Hapus</span>
+                        </Button>
                       </div>
                     </td>
                   </tr>

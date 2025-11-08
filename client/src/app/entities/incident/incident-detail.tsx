@@ -48,10 +48,10 @@ export const IncidentDetail = () => {
             <span id="mitigationAction">Mitigation Action</span>
           </dt>
           <dd>{incidentEntity.mitigationAction}</dd>
-          <dt>User</dt>
-          <dd>{incidentEntity.user ? incidentEntity.user.id : ''}</dd>
+          <dt>Reporter</dt>
+          <dd>{incidentEntity.reporter ? incidentEntity.reporter.login : ''}</dd>
           <dt>Asset</dt>
-          <dd>{incidentEntity.asset ? incidentEntity.asset.id : ''}</dd>
+          <dd>{incidentEntity.asset ? incidentEntity.asset.name : ''}</dd>
         </dl>
         <Button tag={Link} to="/incident" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Kembali</span>

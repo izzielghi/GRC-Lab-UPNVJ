@@ -1,44 +1,50 @@
 import React, { useEffect } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
-import { Button, Col, Row } from 'reactstrap';
+import { Button, Col, FormText, Row } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
+import { mapIdList } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
+import { getEntities as getComplianceRecords } from 'app/entities/compliance-record/compliance-record.reducer';
 import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
+import { getEntities as getAssets } from 'app/entities/asset/asset.reducer';
 import { getEntities as getRooms } from 'app/entities/room/room.reducer';
 import { BookingStatus } from 'app/shared/model/enumerations/booking-status.model';
-import { createEntity, getEntity, updateEntity, reset } from './booking.reducer';
+import { createEntity, getEntity, updateEntity } from './booking.reducer';
 
 export const BookingUpdate = () => {
   const dispatch = useAppDispatch();
+
   const navigate = useNavigate();
+
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
 
+  const complianceRecords = useAppSelector(state => state.complianceRecord.entities);
   const users = useAppSelector(state => state.userManagement.users);
+  const assets = useAppSelector(state => state.asset.entities);
   const rooms = useAppSelector(state => state.room.entities);
   const bookingEntity = useAppSelector(state => state.booking.entity);
   const loading = useAppSelector(state => state.booking.loading);
   const updating = useAppSelector(state => state.booking.updating);
   const updateSuccess = useAppSelector(state => state.booking.updateSuccess);
   const bookingStatusValues = Object.keys(BookingStatus);
-  const account = useAppSelector(state => state.authentication.account);
-  const isAdmin = account?.authorities?.includes('ROLE_ADMIN');
 
   const handleClose = () => {
     navigate('/booking');
   };
 
   useEffect(() => {
-    if (isNew) {
-      dispatch(reset());
-    } else {
+    if (!isNew) {
       dispatch(getEntity(id));
     }
+
+    dispatch(getComplianceRecords({}));
     dispatch(getUsers({}));
+    dispatch(getAssets({}));
     dispatch(getRooms({}));
   }, []);
 
@@ -49,14 +55,19 @@ export const BookingUpdate = () => {
   }, [updateSuccess]);
 
   const saveEntity = values => {
+    if (values.id !== undefined && typeof values.id !== 'number') {
+      values.id = Number(values.id);
+    }
     values.startTime = convertDateTimeToServer(values.startTime);
     values.endTime = convertDateTimeToServer(values.endTime);
 
     const entity = {
       ...bookingEntity,
       ...values,
+      complianceRecord: complianceRecords.find(it => it.id.toString() === values.complianceRecord?.toString()),
       user: users.find(it => it.id.toString() === values.user?.toString()),
-      room: rooms.find(it => it.id.toString() === values.room?.toString()),
+      assets: mapIdList(values.assets),
+      rooms: mapIdList(values.rooms),
     };
 
     if (isNew) {
@@ -73,11 +84,14 @@ export const BookingUpdate = () => {
           endTime: displayDefaultDateTime(),
         }
       : {
+          status: 'PENDING',
           ...bookingEntity,
           startTime: convertDateTimeFromServer(bookingEntity.startTime),
           endTime: convertDateTimeFromServer(bookingEntity.endTime),
+          complianceRecord: bookingEntity?.complianceRecord?.id,
           user: bookingEntity?.user?.id,
-          room: bookingEntity?.room?.id,
+          assets: bookingEntity?.assets?.map(e => e.id.toString()),
+          rooms: bookingEntity?.rooms?.map(e => e.id.toString()),
         };
 
   return (
@@ -94,9 +108,18 @@ export const BookingUpdate = () => {
           {loading ? (
             <p>Loading...</p>
           ) : (
-            // HANYA ADA SATU VALIDATEDFORM DI SINI
-            <ValidatedForm key={bookingEntity.id} defaultValues={defaultValues()} onSubmit={saveEntity}>
+            <ValidatedForm defaultValues={defaultValues()} onSubmit={saveEntity}>
               {!isNew ? <ValidatedField name="id" required readOnly id="booking-id" label="ID" validate={{ required: true }} /> : null}
+              <ValidatedField
+                label="Title"
+                id="booking-title"
+                name="title"
+                data-cy="title"
+                type="text"
+                validate={{
+                  required: { value: true, message: 'Inputan ini diperlukan.' },
+                }}
+              />
               <ValidatedField
                 label="Start Time"
                 id="booking-startTime"
@@ -104,7 +127,9 @@ export const BookingUpdate = () => {
                 data-cy="startTime"
                 type="datetime-local"
                 placeholder="YYYY-MM-DD HH:mm"
-                validate={{ required: { value: true, message: 'Inputan ini diperlukan.' } }}
+                validate={{
+                  required: { value: true, message: 'Inputan ini diperlukan.' },
+                }}
               />
               <ValidatedField
                 label="End Time"
@@ -113,7 +138,9 @@ export const BookingUpdate = () => {
                 data-cy="endTime"
                 type="datetime-local"
                 placeholder="YYYY-MM-DD HH:mm"
-                validate={{ required: { value: true, message: 'Inputan ini diperlukan.' } }}
+                validate={{
+                  required: { value: true, message: 'Inputan ini diperlukan.' },
+                }}
               />
               <ValidatedField
                 label="Purpose"
@@ -121,19 +148,56 @@ export const BookingUpdate = () => {
                 name="purpose"
                 data-cy="purpose"
                 type="text"
-                validate={{ required: { value: true, message: 'Inputan ini diperlukan.' } }}
+                validate={{
+                  required: { value: true, message: 'Inputan ini diperlukan.' },
+                }}
               />
-              {/* Field Status sekarang berada di dalam form yang benar */}
-              {isAdmin && !isNew && (
-                <ValidatedField label="Status" id="booking-status" name="status" data-cy="status" type="select">
-                  {bookingStatusValues.map(bookingStatus => (
-                    <option value={bookingStatus} key={bookingStatus}>
-                      {bookingStatus}
-                    </option>
-                  ))}
-                </ValidatedField>
-              )}
-              <ValidatedField id="booking-room" name="room" data-cy="room" label="Room" type="select" required>
+              <ValidatedField label="Status" id="booking-status" name="status" data-cy="status" type="select">
+                {bookingStatusValues.map(bookingStatus => (
+                  <option value={bookingStatus} key={bookingStatus}>
+                    {bookingStatus}
+                  </option>
+                ))}
+              </ValidatedField>
+              <ValidatedField label="Notes" id="booking-notes" name="notes" data-cy="notes" type="text" />
+              <ValidatedField
+                id="booking-complianceRecord"
+                name="complianceRecord"
+                data-cy="complianceRecord"
+                label="Compliance Record"
+                type="select"
+              >
+                <option value="" key="0" />
+                {complianceRecords
+                  ? complianceRecords.map(otherEntity => (
+                      <option value={otherEntity.id} key={otherEntity.id}>
+                        {otherEntity.id}
+                      </option>
+                    ))
+                  : null}
+              </ValidatedField>
+              <ValidatedField id="booking-user" name="user" data-cy="user" label="User" type="select" required>
+                <option value="" key="0" />
+                {users
+                  ? users.map(otherEntity => (
+                      <option value={otherEntity.id} key={otherEntity.id}>
+                        {otherEntity.login}
+                      </option>
+                    ))
+                  : null}
+              </ValidatedField>
+              <FormText>Inputan ini diperlukan.</FormText>
+              <ValidatedField label="Asset" id="booking-asset" data-cy="asset" type="select" multiple name="assets">
+                <option value="" key="0" />
+                {assets
+                  ? assets.map(otherEntity => (
+                      <option value={otherEntity.id} key={otherEntity.id}>
+                        {otherEntity.name}
+                      </option>
+                    ))
+                  : null}
+              </ValidatedField>
+              <ValidatedField label="Room" id="booking-room" data-cy="room" type="select" multiple name="rooms">
                 <option value="" key="0" />
                 {rooms
                   ? rooms.map(otherEntity => (

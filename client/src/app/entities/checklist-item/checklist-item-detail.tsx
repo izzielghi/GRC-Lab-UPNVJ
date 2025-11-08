@@ -31,12 +31,8 @@ export const ChecklistItemDetail = () => {
             <span id="description">Description</span>
           </dt>
           <dd>{checklistItemEntity.description}</dd>
-          <dt>
-            <span id="isCompliant">Is Compliant</span>
-          </dt>
-          <dd>{checklistItemEntity.isCompliant ? 'true' : 'false'}</dd>
           <dt>Checklist</dt>
-          <dd>{checklistItemEntity.checklist ? checklistItemEntity.checklist.id : ''}</dd>
+          <dd>{checklistItemEntity.checklist ? checklistItemEntity.checklist.name : ''}</dd>
         </dl>
         <Button tag={Link} to="/checklist-item" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Kembali</span>

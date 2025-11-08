@@ -3,7 +3,7 @@
     "changelogDate": "20251007022319"
   },
   "applications": "*",
-  "documentation": "Alat atau perangkat keras di laboratorium",
+  "documentation": "=========================================================\\nENTITAS INTI\\n=========================================================",
   "fields": [
     {
       "fieldName": "name",
@@ -14,10 +14,6 @@
       "fieldName": "code",
       "fieldType": "String",
       "fieldValidateRules": ["required", "unique"]
-    },
-    {
-      "fieldName": "location",
-      "fieldType": "String"
     },
     {
       "fieldName": "condition",
@@ -32,18 +28,15 @@
     {
       "fieldName": "warrantyEndDate",
       "fieldType": "LocalDate"
+    },
+    {
+      "fieldName": "description",
+      "fieldType": "String"
     }
   ],
   "name": "Asset",
   "pagination": "infinite-scroll",
   "relationships": [
-    {
-      "otherEntityName": "usageLog",
-      "otherEntityRelationshipName": "asset",
-      "relationshipName": "usageLog",
-      "relationshipSide": "left",
-      "relationshipType": "one-to-many"
-    },
     {
       "otherEntityName": "maintenanceRecord",
       "otherEntityRelationshipName": "asset",
@@ -59,10 +52,25 @@
       "relationshipType": "one-to-many"
     },
     {
-      "otherEntityName": "sOP",
-      "otherEntityRelationshipName": "rule",
-      "relationshipName": "sOP",
+      "otherEntityField": "name",
+      "otherEntityName": "room",
+      "relationshipName": "location",
       "relationshipSide": "left",
+      "relationshipType": "many-to-one"
+    },
+    {
+      "otherEntityField": "title",
+      "otherEntityName": "sOP",
+      "otherEntityRelationshipName": "asset",
+      "relationshipName": "rule",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityName": "booking",
+      "otherEntityRelationshipName": "asset",
+      "relationshipName": "booking",
+      "relationshipSide": "right",
       "relationshipType": "many-to-many"
     }
   ],

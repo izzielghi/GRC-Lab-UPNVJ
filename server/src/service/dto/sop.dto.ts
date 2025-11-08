@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty } from 'class-validator';
+import { SOPStatus } from '../../domain/enumeration/sop-status';
 import { BaseDTO } from './base.dto';
 
 import { AssetDTO } from './asset.dto';
@@ -22,11 +23,12 @@ export class SOPDTO extends BaseDTO {
   @ApiProperty({ description: 'version field', required: false })
   version?: string;
 
-  @ApiProperty({ description: 'isActive field', required: false })
-  isActive?: boolean;
+  @IsNotEmpty()
+  @ApiProperty({ enum: SOPStatus, description: 'status enum field' })
+  status: SOPStatus;
 
-  @ApiProperty({ type: () => AssetDTO, isArray: true, description: 'rules relationship' })
-  rules?: AssetDTO[];
+  @ApiProperty({ type: () => AssetDTO, isArray: true, description: 'assets relationship' })
+  assets?: AssetDTO[];
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

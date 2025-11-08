@@ -29,6 +29,10 @@ export const BookingDetail = () => {
           </dt>
           <dd>{bookingEntity.id}</dd>
           <dt>
+            <span id="title">Title</span>
+          </dt>
+          <dd>{bookingEntity.title}</dd>
+          <dt>
             <span id="startTime">Start Time</span>
           </dt>
           <dd>{bookingEntity.startTime ? <TextFormat value={bookingEntity.startTime} type="date" format={APP_DATE_FORMAT} /> : null}</dd>
@@ -44,10 +48,36 @@ export const BookingDetail = () => {
             <span id="status">Status</span>
           </dt>
           <dd>{bookingEntity.status}</dd>
+          <dt>
+            <span id="notes">Notes</span>
+          </dt>
+          <dd>{bookingEntity.notes}</dd>
+          <dt>Compliance Record</dt>
+          <dd>{bookingEntity.complianceRecord ? bookingEntity.complianceRecord.id : ''}</dd>
           <dt>User</dt>
           <dd>{bookingEntity.user ? bookingEntity.user.login : ''}</dd>
+          <dt>Asset</dt>
+          <dd>
+            {bookingEntity.assets
+              ? bookingEntity.assets.map((val, i) => (
+                  <span key={val.id}>
+                    <a>{val.name}</a>
+                    {bookingEntity.assets && i === bookingEntity.assets.length - 1 ? '' : ', '}
+                  </span>
+                ))
+              : null}
+          </dd>
           <dt>Room</dt>
-          <dd>{bookingEntity.room ? bookingEntity.room.name : ''}</dd>
+          <dd>
+            {bookingEntity.rooms
+              ? bookingEntity.rooms.map((val, i) => (
+                  <span key={val.id}>
+                    <a>{val.name}</a>
+                    {bookingEntity.rooms && i === bookingEntity.rooms.length - 1 ? '' : ', '}
+                  </span>
+                ))
+              : null}
+          </dd>
         </dl>
         <Button tag={Link} to="/booking" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Kembali</span>

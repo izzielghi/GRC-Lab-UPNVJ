@@ -6,7 +6,7 @@ import { IncidentDTO } from '../service/dto/incident.dto';
 import { IncidentMapper } from '../service/mapper/incident.mapper';
 
 const relations = {
-  user: true,
+  reporter: true,
   asset: true,
 } as const;
 

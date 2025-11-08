@@ -17,8 +17,8 @@ export class MaintenanceRecord extends BaseEntity {
   @Column({ type: 'date', name: 'date' })
   date: any;
 
-  @Column({ type: 'blob', name: 'description' })
-  description: any;
+  @Column({ name: 'description' })
+  description: string;
 
   @Column({ type: 'decimal', name: 'cost', precision: 10, scale: 2, nullable: true })
   cost?: number;
@@ -27,7 +27,7 @@ export class MaintenanceRecord extends BaseEntity {
   nextServiceDate?: any;
 
   @ManyToOne(type => User)
-  user?: User;
+  maintainer?: User;
 
   @ManyToOne(type => Asset)
   asset?: Asset;

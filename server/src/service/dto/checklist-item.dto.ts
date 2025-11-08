@@ -15,9 +15,6 @@ export class ChecklistItemDTO extends BaseDTO {
   @ApiProperty({ description: 'description field' })
   description: string;
 
-  @ApiProperty({ description: 'isCompliant field', required: false })
-  isCompliant?: boolean;
-
   @ApiProperty({ type: () => ComplianceChecklistDTO, description: 'checklist relationship' })
   checklist?: ComplianceChecklistDTO;
 

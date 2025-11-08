@@ -10,8 +10,8 @@ export interface IIncident {
   type?: keyof typeof IncidentType;
   date?: dayjs.Dayjs;
   mitigationAction?: string | null;
-  user?: IUser | null;
-  asset?: IAsset;
+  reporter?: IUser;
+  asset?: IAsset | null;
 }
 
 export const defaultValue: Readonly<IIncident> = {};

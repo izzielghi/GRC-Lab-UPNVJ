@@ -146,7 +146,7 @@ export const MaintenanceRecord = () => {
                     Next Service Date <FontAwesomeIcon icon={getSortIconByFieldName('nextServiceDate')} />
                   </th>
                   <th>
-                    User <FontAwesomeIcon icon="sort" />
+                    Maintainer <FontAwesomeIcon icon="sort" />
                   </th>
                   <th>
                     Asset <FontAwesomeIcon icon="sort" />
@@ -174,9 +174,13 @@ export const MaintenanceRecord = () => {
                         <TextFormat type="date" value={maintenanceRecord.nextServiceDate} format={APP_LOCAL_DATE_FORMAT} />
                       ) : null}
                     </td>
-                    <td>{maintenanceRecord.user ? maintenanceRecord.user.id : ''}</td>
+                    <td>{maintenanceRecord.maintainer ? maintenanceRecord.maintainer.login : ''}</td>
                     <td>
-                      {maintenanceRecord.asset ? <Link to={`/asset/${maintenanceRecord.asset.id}`}>{maintenanceRecord.asset.id}</Link> : ''}
+                      {maintenanceRecord.asset ? (
+                        <Link to={`/asset/${maintenanceRecord.asset.id}`}>{maintenanceRecord.asset.name}</Link>
+                      ) : (
+                        ''
+                      )}
                     </td>
                     <td className="text-end">
                       <div className="btn-group flex-btn-group-container">

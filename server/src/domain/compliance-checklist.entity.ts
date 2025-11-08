@@ -1,8 +1,9 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToOne, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
 import { ChecklistItem } from './checklist-item.entity';
+import { SOP } from './sop.entity';
 
 /**
  * A ComplianceChecklist.
@@ -15,14 +16,14 @@ export class ComplianceChecklist extends BaseEntity {
   @Column({ name: 'name' })
   name: string;
 
-  @Column({ type: 'datetime', name: 'date_time', nullable: true })
-  dateTime?: any;
-
-  @Column({ type: 'boolean', name: 'is_completed' })
-  isCompleted: boolean;
+  @Column({ name: 'description', nullable: true })
+  description?: string;
 
   @OneToMany(type => ChecklistItem, other => other.checklist)
   checklistItems?: ChecklistItem[];
+
+  @ManyToOne(type => SOP)
+  sop?: SOP;
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

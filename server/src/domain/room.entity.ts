@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import { Column, Entity, ManyToMany, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
 import { BaseEntity } from './base/base.entity';
 
 import { Booking } from './booking.entity';
@@ -25,7 +25,7 @@ export class Room extends BaseEntity {
   @Column({ name: 'location_details', nullable: true })
   locationDetails?: string;
 
-  @OneToMany(type => Booking, other => other.room)
+  @ManyToMany(type => Booking)
   bookings?: Booking[];
 
   @OneToMany(type => UsageLog, other => other.room)

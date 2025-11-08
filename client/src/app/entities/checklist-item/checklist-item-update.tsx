@@ -95,20 +95,12 @@ export const ChecklistItemUpdate = () => {
                   required: { value: true, message: 'Inputan ini diperlukan.' },
                 }}
               />
-              <ValidatedField
-                label="Is Compliant"
-                id="checklist-item-isCompliant"
-                name="isCompliant"
-                data-cy="isCompliant"
-                check
-                type="checkbox"
-              />
               <ValidatedField id="checklist-item-checklist" name="checklist" data-cy="checklist" label="Checklist" type="select" required>
                 <option value="" key="0" />
                 {complianceChecklists
                   ? complianceChecklists.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
+                        {otherEntity.name}
                       </option>
                     ))
                   : null}

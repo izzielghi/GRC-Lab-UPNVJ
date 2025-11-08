@@ -130,9 +130,6 @@ export const ChecklistItem = () => {
                   <th className="hand" onClick={sort('description')}>
                     Description <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
                   </th>
-                  <th className="hand" onClick={sort('isCompliant')}>
-                    Is Compliant <FontAwesomeIcon icon={getSortIconByFieldName('isCompliant')} />
-                  </th>
                   <th>
                     Checklist <FontAwesomeIcon icon="sort" />
                   </th>
@@ -148,10 +145,9 @@ export const ChecklistItem = () => {
                       </Button>
                     </td>
                     <td>{checklistItem.description}</td>
-                    <td>{checklistItem.isCompliant ? 'true' : 'false'}</td>
                     <td>
                       {checklistItem.checklist ? (
-                        <Link to={`/compliance-checklist/${checklistItem.checklist.id}`}>{checklistItem.checklist.id}</Link>
+                        <Link to={`/compliance-checklist/${checklistItem.checklist.id}`}>{checklistItem.checklist.name}</Link>
                       ) : (
                         ''
                       )}

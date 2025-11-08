@@ -56,7 +56,7 @@ export const IncidentUpdate = () => {
     const entity = {
       ...incidentEntity,
       ...values,
-      user: users.find(it => it.id.toString() === values.user?.toString()),
+      reporter: users.find(it => it.id.toString() === values.reporter?.toString()),
       asset: assets.find(it => it.id.toString() === values.asset?.toString()),
     };
 
@@ -76,7 +76,7 @@ export const IncidentUpdate = () => {
           type: 'DAMAGE_TO_ASSET',
           ...incidentEntity,
           date: convertDateTimeFromServer(incidentEntity.date),
-          user: incidentEntity?.user?.id,
+          reporter: incidentEntity?.reporter?.id,
           asset: incidentEntity?.asset?.id,
         };
 
@@ -111,7 +111,7 @@ export const IncidentUpdate = () => {
                 id="incident-description"
                 name="description"
                 data-cy="description"
-                type="textarea"
+                type="text"
                 validate={{
                   required: { value: true, message: 'Inputan ini diperlukan.' },
                 }}
@@ -139,29 +139,29 @@ export const IncidentUpdate = () => {
                 id="incident-mitigationAction"
                 name="mitigationAction"
                 data-cy="mitigationAction"
-                type="textarea"
+                type="text"
               />
-              <ValidatedField id="incident-user" name="user" data-cy="user" label="User" type="select">
+              <ValidatedField id="incident-reporter" name="reporter" data-cy="reporter" label="Reporter" type="select" required>
                 <option value="" key="0" />
                 {users
                   ? users.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <ValidatedField id="incident-asset" name="asset" data-cy="asset" label="Asset" type="select" required>
-                <option value="" key="0" />
-                {assets
-                  ? assets.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
+                        {otherEntity.login}
                       </option>
                     ))
                   : null}
               </ValidatedField>
               <FormText>Inputan ini diperlukan.</FormText>
+              <ValidatedField id="incident-asset" name="asset" data-cy="asset" label="Asset" type="select">
+                <option value="" key="0" />
+                {assets
+                  ? assets.map(otherEntity => (
+                      <option value={otherEntity.id} key={otherEntity.id}>
+                        {otherEntity.name}
+                      </option>
+                    ))
+                  : null}
+              </ValidatedField>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/incident" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

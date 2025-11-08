@@ -18,8 +18,8 @@ export class Incident extends BaseEntity {
   @Column({ name: 'title' })
   title: string;
 
-  @Column({ type: 'blob', name: 'description' })
-  description: any;
+  @Column({ name: 'description' })
+  description: string;
 
   @Column({ type: 'simple-enum', name: 'type', enum: IncidentType })
   type: IncidentType;
@@ -27,11 +27,11 @@ export class Incident extends BaseEntity {
   @Column({ type: 'datetime', name: 'date' })
   date: any;
 
-  @Column({ type: 'blob', name: 'mitigation_action', nullable: true })
-  mitigationAction?: any;
+  @Column({ name: 'mitigation_action', nullable: true })
+  mitigationAction?: string;
 
   @ManyToOne(type => User)
-  user?: User;
+  reporter?: User;
 
   @ManyToOne(type => Asset)
   asset?: Asset;

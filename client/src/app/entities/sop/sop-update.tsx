@@ -6,6 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
+import { SOPStatus } from 'app/shared/model/enumerations/sop-status.model';
 import { createEntity, getEntity, updateEntity } from './sop.reducer';
 
 export const SOPUpdate = () => {
@@ -20,6 +21,7 @@ export const SOPUpdate = () => {
   const loading = useAppSelector(state => state.sOP.loading);
   const updating = useAppSelector(state => state.sOP.updating);
   const updateSuccess = useAppSelector(state => state.sOP.updateSuccess);
+  const sOPStatusValues = Object.keys(SOPStatus);
 
   const handleClose = () => {
     navigate('/sop');
@@ -58,6 +60,7 @@ export const SOPUpdate = () => {
     isNew
       ? {}
       : {
+          status: 'AKTIF',
           ...sOPEntity,
         };
 
@@ -98,7 +101,13 @@ export const SOPUpdate = () => {
                 }}
               />
               <ValidatedField label="Version" id="sop-version" name="version" data-cy="version" type="text" />
-              <ValidatedField label="Is Active" id="sop-isActive" name="isActive" data-cy="isActive" check type="checkbox" />
+              <ValidatedField label="Status" id="sop-status" name="status" data-cy="status" type="select">
+                {sOPStatusValues.map(sOPStatus => (
+                  <option value={sOPStatus} key={sOPStatus}>
+                    {sOPStatus}
+                  </option>
+                ))}
+              </ValidatedField>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/sop" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

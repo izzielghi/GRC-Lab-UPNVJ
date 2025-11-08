@@ -17,8 +17,9 @@ export class MaintenanceRecordDTO extends BaseDTO {
   @ApiProperty({ description: 'date field' })
   date: any;
 
+  @IsNotEmpty()
   @ApiProperty({ description: 'description field' })
-  description: any;
+  description: string;
 
   @ApiProperty({ description: 'cost field', required: false })
   cost?: number;
@@ -26,8 +27,8 @@ export class MaintenanceRecordDTO extends BaseDTO {
   @ApiProperty({ description: 'nextServiceDate field', required: false })
   nextServiceDate?: any;
 
-  @ApiProperty({ type: () => UserDTO, description: 'user relationship' })
-  user?: UserDTO;
+  @ApiProperty({ type: () => UserDTO, description: 'maintainer relationship' })
+  maintainer?: UserDTO;
   @ApiProperty({ type: () => AssetDTO, description: 'asset relationship' })
   asset?: AssetDTO;
 

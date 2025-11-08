@@ -14,9 +14,7 @@ import {
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { ComplianceChecklistDTO } from '../../service/dto/compliance-checklist.dto';
-import { ChecklistItemDTO } from '../../service/dto/checklist-item.dto';
 import { ComplianceChecklistService } from '../../service/compliance-checklist.service';
-import { ChecklistItemService } from '../../service/checklist-item.service';
 import { Page, PageRequest } from '../../domain/base/pagination.entity';
 import { AuthGuard, RoleType, Roles, RolesGuard } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
@@ -31,10 +29,7 @@ import { LoggingInterceptor } from '../../client/interceptors/logging.intercepto
 export class ComplianceChecklistController {
   logger = new Logger('ComplianceChecklistController');
 
-  constructor(
-    private readonly complianceChecklistService: ComplianceChecklistService,
-    private readonly checklistItemService: ChecklistItemService,
-  ) {}
+  constructor(private readonly complianceChecklistService: ComplianceChecklistService) {}
 
   @Get('/')
   @Roles(RoleType.USER)
@@ -63,18 +58,6 @@ export class ComplianceChecklistController {
   })
   async getOne(@Param('id') id: number): Promise<ComplianceChecklistDTO> {
     return await this.complianceChecklistService.findById(id);
-  }
-
-  @Get('/:id/items')
-  @Roles(RoleType.USER)
-  @ApiOperation({ summary: 'Get all checklist items for a compliance checklist' })
-  @ApiResponse({
-    status: 200,
-    description: 'List of checklist items',
-    type: ChecklistItemDTO,
-  })
-  async getChecklistItems(@Param('id') id: number): Promise<ChecklistItemDTO[]> {
-    return await this.checklistItemService.findByChecklistId(id);
   }
 
   @PostMethod('/')

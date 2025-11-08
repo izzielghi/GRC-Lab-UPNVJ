@@ -3,7 +3,7 @@
     "changelogDate": "20251007022321"
   },
   "applications": "*",
-  "documentation": "Riwayat Pemeliharaan dan Servis Alat (Monitoring Kondisi Alat)",
+  "documentation": "=========================================================\\nENTITAS PENDUKUNG\\n=========================================================",
   "fields": [
     {
       "fieldName": "date",
@@ -12,7 +12,7 @@
     },
     {
       "fieldName": "description",
-      "fieldType": "TextBlob",
+      "fieldType": "String",
       "fieldValidateRules": ["required"]
     },
     {
@@ -28,15 +28,18 @@
   "pagination": "infinite-scroll",
   "relationships": [
     {
+      "otherEntityField": "login",
       "otherEntityName": "user",
-      "otherEntityRelationshipName": "maintainer",
-      "relationshipName": "user",
+      "relationshipName": "maintainer",
       "relationshipSide": "left",
       "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required",
       "relationshipWithBuiltInEntity": true
     },
     {
+      "otherEntityField": "name",
       "otherEntityName": "asset",
+      "otherEntityRelationshipName": "maintenanceRecord",
       "relationshipName": "asset",
       "relationshipSide": "right",
       "relationshipType": "many-to-one",

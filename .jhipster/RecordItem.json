@@ -1,0 +1,35 @@
+{
+  "annotations": {
+    "changelogDate": "20251108021409"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "isCompliant",
+      "fieldType": "Boolean"
+    }
+  ],
+  "name": "RecordItem",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityField": "description",
+      "otherEntityName": "checklistItem",
+      "relationshipName": "item",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    },
+    {
+      "otherEntityField": "id",
+      "otherEntityName": "complianceRecord",
+      "otherEntityRelationshipName": "recordItem",
+      "relationshipName": "record",
+      "relationshipSide": "right",
+      "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

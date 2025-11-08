@@ -5,6 +5,10 @@ import { ComplianceChecklist } from '../domain/compliance-checklist.entity';
 import { ComplianceChecklistDTO } from '../service/dto/compliance-checklist.dto';
 import { ComplianceChecklistMapper } from '../service/mapper/compliance-checklist.mapper';
 
+const relations = {
+  sop: true,
+} as const;
+
 @Injectable()
 export class ComplianceChecklistService {
   logger = new Logger('ComplianceChecklistService');
@@ -13,6 +17,7 @@ export class ComplianceChecklistService {
 
   async findById(id: number): Promise<ComplianceChecklistDTO | undefined> {
     const result = await this.complianceChecklistRepository.findOne({
+      relations,
       where: { id },
     });
     return ComplianceChecklistMapper.fromEntityToDTO(result);
@@ -24,7 +29,7 @@ export class ComplianceChecklistService {
   }
 
   async findAndCount(options: FindManyOptions<ComplianceChecklistDTO>): Promise<[ComplianceChecklistDTO[], number]> {
-    const resultList = await this.complianceChecklistRepository.findAndCount(options);
+    const resultList = await this.complianceChecklistRepository.findAndCount({ ...options, relations });
     const complianceChecklistDTO: ComplianceChecklistDTO[] = [];
     if (resultList && resultList[0]) {
       resultList[0].forEach(complianceChecklist =>

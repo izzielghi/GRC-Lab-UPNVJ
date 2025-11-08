@@ -14,19 +14,19 @@ import { getEntities, reset } from './booking.reducer';
 
 export const Booking = () => {
   const dispatch = useAppDispatch();
+
   const pageLocation = useLocation();
 
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
+  const [sorting, setSorting] = useState(false);
 
   const bookingList = useAppSelector(state => state.booking.entities);
   const loading = useAppSelector(state => state.booking.loading);
   const links = useAppSelector(state => state.booking.links);
-  const totalItems = useAppSelector(state => state.booking.totalItems);
   const updateSuccess = useAppSelector(state => state.booking.updateSuccess);
 
-  // GANTI SEMUA KODE DARI SINI...
   const getAllEntities = () => {
     dispatch(
       getEntities({
@@ -39,48 +39,52 @@ export const Booking = () => {
 
   const resetAll = () => {
     dispatch(reset());
-    setPaginationState(prevState => ({
-      ...prevState,
+    setPaginationState({
+      ...paginationState,
       activePage: 1,
-    }));
+    });
+    dispatch(getEntities({}));
   };
 
   useEffect(() => {
-    // Saat komponen pertama kali dimuat, reset semuanya.
     resetAll();
   }, []);
 
   useEffect(() => {
-    // Setelah update berhasil (create/edit), reset semuanya.
     if (updateSuccess) {
       resetAll();
     }
   }, [updateSuccess]);
 
   useEffect(() => {
-    // useEffect UTAMA: Ambil data setiap kali paginationState berubah.
-    // Karena resetAll() mengubah paginationState, ini akan otomatis
-    // mengambil data baru setelah reset.
     getAllEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort]);
+  }, [paginationState.activePage]);
 
   const handleLoadMore = () => {
-    if ((window as any).pageYOffset > 0 && paginationState.activePage - 1 < links.next) {
-      setPaginationState(prevState => ({
-        ...prevState,
-        activePage: prevState.activePage + 1,
-      }));
+    if ((window as any).pageYOffset > 0) {
+      setPaginationState({
+        ...paginationState,
+        activePage: paginationState.activePage + 1,
+      });
     }
   };
 
+  useEffect(() => {
+    if (sorting) {
+      getAllEntities();
+      setSorting(false);
+    }
+  }, [sorting]);
+
   const sort = p => () => {
     dispatch(reset());
-    setPaginationState(prevState => ({
-      ...prevState,
+    setPaginationState({
+      ...paginationState,
       activePage: 1,
-      order: prevState.order === ASC ? DESC : ASC,
+      order: paginationState.order === ASC ? DESC : ASC,
       sort: p,
-    }));
+    });
+    setSorting(true);
   };
 
   const handleSyncList = () => {
@@ -95,9 +99,6 @@ export const Booking = () => {
     }
     return order === ASC ? faSortUp : faSortDown;
   };
-  // ...SAMPAI SEBELUM BARIS 'return ('
-
-  // Kode 'return (...)' Anda tidak perlu diubah
 
   return (
     <div>
@@ -127,6 +128,9 @@ export const Booking = () => {
                   <th className="hand" onClick={sort('id')}>
                     ID <FontAwesomeIcon icon={getSortIconByFieldName('id')} />
                   </th>
+                  <th className="hand" onClick={sort('title')}>
+                    Title <FontAwesomeIcon icon={getSortIconByFieldName('title')} />
+                  </th>
                   <th className="hand" onClick={sort('startTime')}>
                     Start Time <FontAwesomeIcon icon={getSortIconByFieldName('startTime')} />
                   </th>
@@ -139,11 +143,14 @@ export const Booking = () => {
                   <th className="hand" onClick={sort('status')}>
                     Status <FontAwesomeIcon icon={getSortIconByFieldName('status')} />
                   </th>
-                  <th>
-                    User <FontAwesomeIcon icon="sort" />
+                  <th className="hand" onClick={sort('notes')}>
+                    Notes <FontAwesomeIcon icon={getSortIconByFieldName('notes')} />
                   </th>
                   <th>
-                    Room <FontAwesomeIcon icon="sort" />
+                    Compliance Record <FontAwesomeIcon icon="sort" />
+                  </th>
+                  <th>
+                    User <FontAwesomeIcon icon="sort" />
                   </th>
                   <th />
                 </tr>
@@ -156,12 +163,20 @@ export const Booking = () => {
                         {booking.id}
                       </Button>
                     </td>
+                    <td>{booking.title}</td>
                     <td>{booking.startTime ? <TextFormat type="date" value={booking.startTime} format={APP_DATE_FORMAT} /> : null}</td>
                     <td>{booking.endTime ? <TextFormat type="date" value={booking.endTime} format={APP_DATE_FORMAT} /> : null}</td>
                     <td>{booking.purpose}</td>
                     <td>{booking.status}</td>
+                    <td>{booking.notes}</td>
+                    <td>
+                      {booking.complianceRecord ? (
+                        <Link to={`/compliance-record/${booking.complianceRecord.id}`}>{booking.complianceRecord.id}</Link>
+                      ) : (
+                        ''
+                      )}
+                    </td>
                     <td>{booking.user ? booking.user.login : ''}</td>
-                    <td>{booking.room ? <Link to={`/room/${booking.room.id}`}>{booking.room.name}</Link> : ''}</td>
                     <td className="text-end">
                       <div className="btn-group flex-btn-group-container">
                         <Button tag={Link} to={`/booking/${booking.id}`} color="info" size="sm" data-cy="entityDetailsButton">

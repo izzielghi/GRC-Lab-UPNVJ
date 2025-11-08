@@ -55,7 +55,7 @@ export const MaintenanceRecordUpdate = () => {
     const entity = {
       ...maintenanceRecordEntity,
       ...values,
-      user: users.find(it => it.id.toString() === values.user?.toString()),
+      maintainer: users.find(it => it.id.toString() === values.maintainer?.toString()),
       asset: assets.find(it => it.id.toString() === values.asset?.toString()),
     };
 
@@ -71,7 +71,7 @@ export const MaintenanceRecordUpdate = () => {
       ? {}
       : {
           ...maintenanceRecordEntity,
-          user: maintenanceRecordEntity?.user?.id,
+          maintainer: maintenanceRecordEntity?.maintainer?.id,
           asset: maintenanceRecordEntity?.asset?.id,
         };
 
@@ -108,7 +108,7 @@ export const MaintenanceRecordUpdate = () => {
                 id="maintenance-record-description"
                 name="description"
                 data-cy="description"
-                type="textarea"
+                type="text"
                 validate={{
                   required: { value: true, message: 'Inputan ini diperlukan.' },
                 }}
@@ -121,22 +121,30 @@ export const MaintenanceRecordUpdate = () => {
                 data-cy="nextServiceDate"
                 type="date"
               />
-              <ValidatedField id="maintenance-record-user" name="user" data-cy="user" label="User" type="select">
+              <ValidatedField
+                id="maintenance-record-maintainer"
+                name="maintainer"
+                data-cy="maintainer"
+                label="Maintainer"
+                type="select"
+                required
+              >
                 <option value="" key="0" />
                 {users
                   ? users.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
+                        {otherEntity.login}
                       </option>
                     ))
                   : null}
               </ValidatedField>
+              <FormText>Inputan ini diperlukan.</FormText>
               <ValidatedField id="maintenance-record-asset" name="asset" data-cy="asset" label="Asset" type="select" required>
                 <option value="" key="0" />
                 {assets
                   ? assets.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
+                        {otherEntity.name}
                       </option>
                     ))
                   : null}

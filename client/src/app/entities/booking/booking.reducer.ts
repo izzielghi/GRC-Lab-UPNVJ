@@ -76,13 +76,6 @@ export const deleteEntity = createAsyncThunk(
 export const BookingSlice = createEntitySlice({
   name: 'booking',
   initialState,
-  reducers: {
-    reset(state) {
-      // Kembalikan state ke kondisi awal (kosong)
-      Object.assign(state, initialState);
-    },
-  },
-
   extraReducers(builder) {
     builder
       .addCase(getEntity.fulfilled, (state, action) => {

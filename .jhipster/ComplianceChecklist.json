@@ -3,7 +3,7 @@
     "changelogDate": "20251007022324"
   },
   "applications": "*",
-  "documentation": "Checklist Kepatuhan (Misalnya, sebelum/sesudah Praktikum)",
+  "documentation": "=========================================================\\nENTITAS UNTUK FITUR COMPLIANCE CHECKLIST\\n=========================================================",
   "fields": [
     {
       "fieldName": "name",
@@ -11,13 +11,8 @@
       "fieldValidateRules": ["required"]
     },
     {
-      "fieldName": "dateTime",
-      "fieldType": "ZonedDateTime"
-    },
-    {
-      "fieldName": "isCompleted",
-      "fieldType": "Boolean",
-      "fieldValidateRules": ["required"]
+      "fieldName": "description",
+      "fieldType": "String"
     }
   ],
   "name": "ComplianceChecklist",
@@ -29,6 +24,13 @@
       "relationshipName": "checklistItem",
       "relationshipSide": "left",
       "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityField": "title",
+      "otherEntityName": "sOP",
+      "relationshipName": "sop",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no",

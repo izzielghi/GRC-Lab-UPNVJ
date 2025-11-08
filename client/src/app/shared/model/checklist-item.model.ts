@@ -3,10 +3,7 @@ import { IComplianceChecklist } from 'app/shared/model/compliance-checklist.mode
 export interface IChecklistItem {
   id?: number;
   description?: string;
-  isCompliant?: boolean | null;
   checklist?: IComplianceChecklist;
 }
 
-export const defaultValue: Readonly<IChecklistItem> = {
-  isCompliant: false,
-};
+export const defaultValue: Readonly<IChecklistItem> = {};

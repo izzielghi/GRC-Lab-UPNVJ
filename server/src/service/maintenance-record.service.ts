@@ -6,7 +6,7 @@ import { MaintenanceRecordDTO } from '../service/dto/maintenance-record.dto';
 import { MaintenanceRecordMapper } from '../service/mapper/maintenance-record.mapper';
 
 const relations = {
-  user: true,
+  maintainer: true,
   asset: true,
 } as const;
 

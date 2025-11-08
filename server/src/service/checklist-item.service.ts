@@ -38,11 +38,6 @@ export class ChecklistItemService {
     return resultList;
   }
 
-  async findByChecklistId(checklistId: number): Promise<ChecklistItemDTO[]> {
-    const result = await this.checklistItemRepository.find({ where: { checklist: { id: checklistId } } });
-    return result.map(item => ChecklistItemMapper.fromEntityToDTO(item));
-  }
-
   async save(checklistItemDTO: ChecklistItemDTO, creator?: string): Promise<ChecklistItemDTO | undefined> {
     const entity = ChecklistItemMapper.fromDTOtoEntity(checklistItemDTO);
     if (creator) {

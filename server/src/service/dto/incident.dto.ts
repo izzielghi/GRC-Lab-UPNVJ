@@ -18,8 +18,9 @@ export class IncidentDTO extends BaseDTO {
   @ApiProperty({ description: 'title field' })
   title: string;
 
+  @IsNotEmpty()
   @ApiProperty({ description: 'description field' })
-  description: any;
+  description: string;
 
   @IsNotEmpty()
   @ApiProperty({ enum: IncidentType, description: 'type enum field' })
@@ -30,10 +31,10 @@ export class IncidentDTO extends BaseDTO {
   date: any;
 
   @ApiProperty({ description: 'mitigationAction field', required: false })
-  mitigationAction?: any;
+  mitigationAction?: string;
 
-  @ApiProperty({ type: () => UserDTO, description: 'user relationship' })
-  user?: UserDTO;
+  @ApiProperty({ type: () => UserDTO, description: 'reporter relationship' })
+  reporter?: UserDTO;
   @ApiProperty({ type: () => AssetDTO, description: 'asset relationship' })
   asset?: AssetDTO;
 

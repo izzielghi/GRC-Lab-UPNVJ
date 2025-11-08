@@ -136,8 +136,8 @@ export const SOP = () => {
                   <th className="hand" onClick={sort('version')}>
                     Version <FontAwesomeIcon icon={getSortIconByFieldName('version')} />
                   </th>
-                  <th className="hand" onClick={sort('isActive')}>
-                    Is Active <FontAwesomeIcon icon={getSortIconByFieldName('isActive')} />
+                  <th className="hand" onClick={sort('status')}>
+                    Status <FontAwesomeIcon icon={getSortIconByFieldName('status')} />
                   </th>
                   <th />
                 </tr>
@@ -153,7 +153,7 @@ export const SOP = () => {
                     <td>{sOP.title}</td>
                     <td>{sOP.documentPath}</td>
                     <td>{sOP.version}</td>
-                    <td>{sOP.isActive ? 'true' : 'false'}</td>
+                    <td>{sOP.status}</td>
                     <td className="text-end">
                       <div className="btn-group flex-btn-group-container">
                         <Button tag={Link} to={`/sop/${sOP.id}`} color="info" size="sm" data-cy="entityDetailsButton">

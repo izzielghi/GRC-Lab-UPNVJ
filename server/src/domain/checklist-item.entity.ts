@@ -15,9 +15,6 @@ export class ChecklistItem extends BaseEntity {
   @Column({ name: 'description' })
   description: string;
 
-  @Column({ type: 'boolean', name: 'is_compliant', nullable: true })
-  isCompliant?: boolean;
-
   @ManyToOne(type => ComplianceChecklist)
   checklist?: ComplianceChecklist;
 

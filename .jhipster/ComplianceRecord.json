@@ -1,0 +1,39 @@
+{
+  "annotations": {
+    "changelogDate": "20251108021408"
+  },
+  "applications": "*",
+  "fields": [
+    {
+      "fieldName": "dateTime",
+      "fieldType": "ZonedDateTime",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "isCompleted",
+      "fieldType": "Boolean",
+      "fieldValidateRules": ["required"]
+    }
+  ],
+  "name": "ComplianceRecord",
+  "pagination": "infinite-scroll",
+  "relationships": [
+    {
+      "otherEntityName": "recordItem",
+      "otherEntityRelationshipName": "record",
+      "relationshipName": "recordItem",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-many"
+    },
+    {
+      "otherEntityName": "booking",
+      "otherEntityRelationshipName": "complianceRecord",
+      "relationshipName": "booking",
+      "relationshipSide": "right",
+      "relationshipType": "one-to-one",
+      "relationshipValidateRules": "required"
+    }
+  ],
+  "searchEngine": "no",
+  "service": "serviceClass"
+}

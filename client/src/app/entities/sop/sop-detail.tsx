@@ -40,9 +40,9 @@ export const SOPDetail = () => {
           </dt>
           <dd>{sOPEntity.version}</dd>
           <dt>
-            <span id="isActive">Is Active</span>
+            <span id="status">Status</span>
           </dt>
-          <dd>{sOPEntity.isActive ? 'true' : 'false'}</dd>
+          <dd>{sOPEntity.status}</dd>
         </dl>
         <Button tag={Link} to="/sop" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Kembali</span>

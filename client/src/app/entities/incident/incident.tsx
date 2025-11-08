@@ -144,7 +144,7 @@ export const Incident = () => {
                     Mitigation Action <FontAwesomeIcon icon={getSortIconByFieldName('mitigationAction')} />
                   </th>
                   <th>
-                    User <FontAwesomeIcon icon="sort" />
+                    Reporter <FontAwesomeIcon icon="sort" />
                   </th>
                   <th>
                     Asset <FontAwesomeIcon icon="sort" />
@@ -165,8 +165,8 @@ export const Incident = () => {
                     <td>{incident.type}</td>
                     <td>{incident.date ? <TextFormat type="date" value={incident.date} format={APP_DATE_FORMAT} /> : null}</td>
                     <td>{incident.mitigationAction}</td>
-                    <td>{incident.user ? incident.user.id : ''}</td>
-                    <td>{incident.asset ? <Link to={`/asset/${incident.asset.id}`}>{incident.asset.id}</Link> : ''}</td>
+                    <td>{incident.reporter ? incident.reporter.login : ''}</td>
+                    <td>{incident.asset ? <Link to={`/asset/${incident.asset.id}`}>{incident.asset.name}</Link> : ''}</td>
                     <td className="text-end">
                       <div className="btn-group flex-btn-group-container">
                         <Button tag={Link} to={`/incident/${incident.id}`} color="info" size="sm" data-cy="entityDetailsButton">

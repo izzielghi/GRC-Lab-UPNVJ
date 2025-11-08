@@ -6,7 +6,8 @@ import { AssetDTO } from '../service/dto/asset.dto';
 import { AssetMapper } from '../service/mapper/asset.mapper';
 
 const relations = {
-  sOPS: true,
+  location: true,
+  rules: true,
 } as const;
 
 @Injectable()

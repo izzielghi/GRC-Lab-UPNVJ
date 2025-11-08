@@ -4,6 +4,8 @@ import { IsNotEmpty } from 'class-validator';
 import { BookingStatus } from '../../domain/enumeration/booking-status';
 import { BaseDTO } from './base.dto';
 
+import { ComplianceRecordDTO } from './compliance-record.dto';
+import { AssetDTO } from './asset.dto';
 import { RoomDTO } from './room.dto';
 
 import { UserDTO } from './user.dto';
@@ -13,6 +15,10 @@ import { UserDTO } from './user.dto';
  */
 export class BookingDTO extends BaseDTO {
   id?: number;
+
+  @IsNotEmpty()
+  @ApiProperty({ description: 'title field' })
+  title: string;
 
   @IsNotEmpty()
   @ApiProperty({ description: 'startTime field' })
@@ -29,10 +35,17 @@ export class BookingDTO extends BaseDTO {
   @ApiProperty({ enum: BookingStatus, description: 'status enum field', required: false })
   status?: BookingStatus;
 
+  @ApiProperty({ description: 'notes field', required: false })
+  notes?: string;
+
+  @ApiProperty({ type: () => ComplianceRecordDTO, description: 'complianceRecord relationship' })
+  complianceRecord?: ComplianceRecordDTO;
   @ApiProperty({ type: () => UserDTO, description: 'user relationship' })
   user?: UserDTO;
-  @ApiProperty({ type: () => RoomDTO, description: 'room relationship' })
-  room?: RoomDTO;
+  @ApiProperty({ type: () => AssetDTO, isArray: true, description: 'assets relationship' })
+  assets?: AssetDTO[];
+  @ApiProperty({ type: () => RoomDTO, isArray: true, description: 'rooms relationship' })
+  rooms?: RoomDTO[];
 
   // jhipster-needle-entity-add-field - JHipster will add fields here, do not remove
 }

@@ -3,7 +3,6 @@
     "changelogDate": "20251007022322"
   },
   "applications": "*",
-  "documentation": "Pelaporan Insiden (Kerusakan/Kecelakaan)",
   "fields": [
     {
       "fieldName": "title",
@@ -12,7 +11,7 @@
     },
     {
       "fieldName": "description",
-      "fieldType": "TextBlob",
+      "fieldType": "String",
       "fieldValidateRules": ["required"]
     },
     {
@@ -28,26 +27,28 @@
     },
     {
       "fieldName": "mitigationAction",
-      "fieldType": "TextBlob"
+      "fieldType": "String"
     }
   ],
   "name": "Incident",
   "pagination": "infinite-scroll",
   "relationships": [
     {
+      "otherEntityField": "login",
       "otherEntityName": "user",
-      "otherEntityRelationshipName": "reporter",
-      "relationshipName": "user",
+      "relationshipName": "reporter",
       "relationshipSide": "left",
       "relationshipType": "many-to-one",
+      "relationshipValidateRules": "required",
       "relationshipWithBuiltInEntity": true
     },
     {
+      "otherEntityField": "name",
       "otherEntityName": "asset",
+      "otherEntityRelationshipName": "incident",
       "relationshipName": "asset",
       "relationshipSide": "right",
-      "relationshipType": "many-to-one",
-      "relationshipValidateRules": "required"
+      "relationshipType": "many-to-one"
     }
   ],
   "searchEngine": "no",

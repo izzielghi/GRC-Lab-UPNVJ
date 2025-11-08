@@ -4,9 +4,9 @@ import { Button, Col, Row } from 'reactstrap';
 import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
-import { convertDateTimeFromServer, convertDateTimeToServer, displayDefaultDateTime } from 'app/shared/util/date-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
+import { getEntities as getSOPS } from 'app/entities/sop/sop.reducer';
 import { createEntity, getEntity, updateEntity } from './compliance-checklist.reducer';
 
 export const ComplianceChecklistUpdate = () => {
@@ -17,6 +17,7 @@ export const ComplianceChecklistUpdate = () => {
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
 
+  const sOPS = useAppSelector(state => state.sOP.entities);
   const complianceChecklistEntity = useAppSelector(state => state.complianceChecklist.entity);
   const loading = useAppSelector(state => state.complianceChecklist.loading);
   const updating = useAppSelector(state => state.complianceChecklist.updating);
@@ -30,6 +31,8 @@ export const ComplianceChecklistUpdate = () => {
     if (!isNew) {
       dispatch(getEntity(id));
     }
+
+    dispatch(getSOPS({}));
   }, []);
 
   useEffect(() => {
@@ -42,11 +45,11 @@ export const ComplianceChecklistUpdate = () => {
     if (values.id !== undefined && typeof values.id !== 'number') {
       values.id = Number(values.id);
     }
-    values.dateTime = convertDateTimeToServer(values.dateTime);
 
     const entity = {
       ...complianceChecklistEntity,
       ...values,
+      sop: sOPS.find(it => it.id.toString() === values.sop?.toString()),
     };
 
     if (isNew) {
@@ -58,12 +61,10 @@ export const ComplianceChecklistUpdate = () => {
 
   const defaultValues = () =>
     isNew
-      ? {
-          dateTime: displayDefaultDateTime(),
-        }
+      ? {}
       : {
           ...complianceChecklistEntity,
-          dateTime: convertDateTimeFromServer(complianceChecklistEntity.dateTime),
+          sop: complianceChecklistEntity?.sop?.id,
         };
 
   return (
@@ -95,21 +96,22 @@ export const ComplianceChecklistUpdate = () => {
                 }}
               />
               <ValidatedField
-                label="Date Time"
-                id="compliance-checklist-dateTime"
-                name="dateTime"
-                data-cy="dateTime"
-                type="datetime-local"
-                placeholder="YYYY-MM-DD HH:mm"
+                label="Description"
+                id="compliance-checklist-description"
+                name="description"
+                data-cy="description"
+                type="text"
               />
-              <ValidatedField
-                label="Is Completed"
-                id="compliance-checklist-isCompleted"
-                name="isCompleted"
-                data-cy="isCompleted"
-                check
-                type="checkbox"
-              />
+              <ValidatedField id="compliance-checklist-sop" name="sop" data-cy="sop" label="Sop" type="select">
+                <option value="" key="0" />
+                {sOPS
+                  ? sOPS.map(otherEntity => (
+                      <option value={otherEntity.id} key={otherEntity.id}>
+                        {otherEntity.title}
+                      </option>
+                    ))
+                  : null}
+              </ValidatedField>
               <Button tag={Link} id="cancel-save" data-cy="entityCreateCancelButton" to="/compliance-checklist" replace color="info">
                 <FontAwesomeIcon icon="arrow-left" />
                 &nbsp;

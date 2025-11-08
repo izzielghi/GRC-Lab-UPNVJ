@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import InfiniteScroll from 'react-infinite-scroll-component';
 import { Link, useLocation } from 'react-router-dom';
 import { Button, Table } from 'reactstrap';
-import { TextFormat, getPaginationState } from 'react-jhipster';
+import { getPaginationState } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortDown, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import { APP_DATE_FORMAT } from 'app/config/constants';
 import { ASC, DESC, ITEMS_PER_PAGE } from 'app/shared/util/pagination.constants';
 import { overridePaginationStateWithQueryParams } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
@@ -136,11 +135,11 @@ export const ComplianceChecklist = () => {
                   <th className="hand" onClick={sort('name')}>
                     Name <FontAwesomeIcon icon={getSortIconByFieldName('name')} />
                   </th>
-                  <th className="hand" onClick={sort('dateTime')}>
-                    Date Time <FontAwesomeIcon icon={getSortIconByFieldName('dateTime')} />
+                  <th className="hand" onClick={sort('description')}>
+                    Description <FontAwesomeIcon icon={getSortIconByFieldName('description')} />
                   </th>
-                  <th className="hand" onClick={sort('isCompleted')}>
-                    Is Completed <FontAwesomeIcon icon={getSortIconByFieldName('isCompleted')} />
+                  <th>
+                    Sop <FontAwesomeIcon icon="sort" />
                   </th>
                   <th />
                 </tr>
@@ -154,12 +153,14 @@ export const ComplianceChecklist = () => {
                       </Button>
                     </td>
                     <td>{complianceChecklist.name}</td>
+                    <td>{complianceChecklist.description}</td>
                     <td>
-                      {complianceChecklist.dateTime ? (
-                        <TextFormat type="date" value={complianceChecklist.dateTime} format={APP_DATE_FORMAT} />
-                      ) : null}
+                      {complianceChecklist.sop ? (
+                        <Link to={`/sop/${complianceChecklist.sop.id}`}>{complianceChecklist.sop.title}</Link>
+                      ) : (
+                        ''
+                      )}
                     </td>
-                    <td>{complianceChecklist.isCompleted ? 'true' : 'false'}</td>
                     <td className="text-end">
                       <div className="btn-group flex-btn-group-container">
                         <Button

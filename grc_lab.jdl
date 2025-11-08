@@ -7,7 +7,7 @@ enum AssetCondition {
     GOOD,
     MINOR_DAMAGE,
     OUT_OF_SERVICE,
-    NEEDS_SERVICE // Untuk memicu reminder otomatis
+    NEEDS_SERVICE
 }
 
 enum IncidentType {
@@ -17,88 +17,35 @@ enum IncidentType {
 }
 
 enum BookingStatus {
-    PENDING,
-    APPROVED,
-    REJECTED,
-    CANCELLED,
-    COMPLETED
+    PENDING,        
+    APPROVED,       
+    REJECTED,       
+    CANCELLED,      
+    IN_PROGRESS,    
+    COMPLETED,      
+    OVERDUE         
+}
+
+enum SOPStatus {
+    AKTIF,
+    ARSIP
 }
 
 /**
  * =========================================================
- * ENTITAS TATA KELOLA & RISIKO (RISK MANAGEMENT)
+ * ENTITAS INTI
  * =========================================================
  */
 
-/** Alat atau perangkat keras di laboratorium */
 entity Asset {
     name String required,
     code String required unique,
-    location String,
     condition AssetCondition,
     purchaseDate LocalDate,
-    warrantyEndDate LocalDate
+    warrantyEndDate LocalDate,
+    description String
 }
 
-/** Catatan Pemakaian Alat */
-entity UsageLog {
-    dateTime ZonedDateTime required,
-    purpose String required,
-    duration Integer min(1) // dalam menit
-}
-
-/** Riwayat Pemeliharaan dan Servis Alat (Monitoring Kondisi Alat) */
-entity MaintenanceRecord {
-    date LocalDate required,
-    description TextBlob required,
-    cost BigDecimal,
-    nextServiceDate LocalDate // Untuk reminder otomatis
-}
-
-entity Booking {
-    startTime ZonedDateTime required,
-    endTime ZonedDateTime required,
-    purpose String required,
-    status BookingStatus
-}
-
-/** Pelaporan Insiden (Kerusakan/Kecelakaan) */
-entity Incident {
-    title String required,
-    description TextBlob required,
-    type IncidentType required,
-    date ZonedDateTime required,
-    mitigationAction TextBlob // Tindakan penanggulangan yang telah dilakukan
-}
-
-/**
- * =========================================================
- * ENTITAS KEPATUHAN (COMPLIANCE)
- * =========================================================
- */
-
-/** Dokumentasi SOP & Aturan */
-entity SOP {
-    title String required,
-    documentPath String required, // Lokasi atau path file SOP
-    version String,
-    isActive Boolean
-}
-
-/** Checklist Kepatuhan (Misalnya, sebelum/sesudah Praktikum) */
-entity ComplianceChecklist {
-    name String required,
-    dateTime ZonedDateTime,
-    isCompleted Boolean required
-}
-
-/** Item-item spesifik dalam Checklist Kepatuhan */
-entity ChecklistItem {
-    description String required,
-    isCompliant Boolean
-}
-
-// Tambahkan entitas pinjam ruangan
 entity Room {
     name String required,
     code String required unique,
@@ -106,6 +53,67 @@ entity Room {
     locationDetails String
 }
 
+entity Booking {
+    title String required, // Judul/Nama Acara, misal: "Rapat Kordinasi Mingguan"
+    startTime ZonedDateTime required,
+    endTime ZonedDateTime required,
+    purpose String required,
+    status BookingStatus,
+    notes String // Kolom untuk catatan tambahan
+}
+
+/**
+ * =========================================================
+ * ENTITAS PENDUKUNG
+ * =========================================================
+ */
+
+entity MaintenanceRecord {
+    date LocalDate required,
+    description String required,
+    cost BigDecimal,
+    nextServiceDate LocalDate
+}
+
+entity Incident {
+    title String required,
+    description String required,
+    type IncidentType required,
+    date ZonedDateTime required,
+    mitigationAction String
+}
+
+entity SOP {
+    title String required,
+    documentPath String required,
+    version String,
+    status SOPStatus required
+}
+
+/**
+ * =========================================================
+ * ENTITAS UNTUK FITUR COMPLIANCE CHECKLIST
+ * =========================================================
+ */
+
+entity ComplianceChecklist {
+    name String required,
+    description String
+}
+
+entity ChecklistItem {
+    description String required
+}
+
+entity ComplianceRecord {
+    dateTime ZonedDateTime required,
+    isCompleted Boolean required
+}
+
+// Detail per item dari hasil pengisian checklist
+entity RecordItem {
+    isCompliant Boolean
+}
 
 /**
  * =========================================================
@@ -113,46 +121,31 @@ entity Room {
  * =========================================================
  */
 
-// Hubungan Aset ke Log dan Insiden (Satu Aset punya banyak Log/Insiden)
 relationship OneToMany {
-    Asset to UsageLog{asset required},
-    Asset to MaintenanceRecord{asset required},
-    Asset to Incident{asset required}
+    Asset{maintenanceRecord} to MaintenanceRecord{asset(name) required},
+    Asset{incident} to Incident{asset(name)},
+    ComplianceChecklist{checklistItem} to ChecklistItem{checklist(name) required},
+    ComplianceRecord{recordItem} to RecordItem{record(id) required}
 }
 
-// Hubungan ke Pengguna (User - sudah disediakan JHipster)
-// Menggunakan 'with builtInEntity' untuk entitas bawaan JHipster
 relationship ManyToOne {
-    UsageLog to User{user required} with builtInEntity,
-    Incident to User{reporter required} with builtInEntity,
-    MaintenanceRecord to User{maintainer required} with builtInEntity
+    Booking{user(login) required} to User with builtInEntity,
+    Incident{reporter(login) required} to User with builtInEntity,
+    MaintenanceRecord{maintainer(login) required} to User with builtInEntity,
+    Asset{location(name)} to Room,
+    RecordItem{item(description) required} to ChecklistItem,
+    ComplianceChecklist{sop(title)} to SOP
 }
 
-// Hubungan Checklist (Satu Checklist bisa punya banyak Item)
-relationship OneToMany {
-    ComplianceChecklist to ChecklistItem{checklist required}
+relationship OneToOne {
+    Booking{complianceRecord} to ComplianceRecord{booking required}
 }
 
-// Hubungan Aset ke SOP (Banyak Aset ke Banyak SOP)
 relationship ManyToMany {
-    Asset to SOP{rule}
+    Booking{asset(name)} to Asset{booking},
+    Booking{room(name)} to Room{booking},
+    Asset{rule(title)} to SOP{asset}
 }
 
-// Tambahkan hubungan ManyToOne dari UsageLog ke Room
-relationship ManyToOne {
-    UsageLog to Room{room required}
-}
-
-relationship OneToMany {
-    Room to Booking{room(name) required}
-}
-
-// Satu User bisa membuat banyak Peminjaman
-relationship ManyToOne {
-    Booking{user(login) required} to User with builtInEntity
-}
-
-// Set pagination untuk semua entitas
 paginate * with infinite-scroll
-// Set service class untuk semua entitas (dibuat di NestJS)
 service * with serviceClass

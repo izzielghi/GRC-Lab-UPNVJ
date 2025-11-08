@@ -13,8 +13,6 @@ export const AssetDetail = () => {
   const dispatch = useAppDispatch();
 
   const { id } = useParams<'id'>();
-  const account = useAppSelector(state => state.authentication.account);
-  const isAdmin = account?.authorities?.includes('ROLE_ADMIN');
 
   useEffect(() => {
     dispatch(getEntity(id));
@@ -39,10 +37,6 @@ export const AssetDetail = () => {
           </dt>
           <dd>{assetEntity.code}</dd>
           <dt>
-            <span id="location">Location</span>
-          </dt>
-          <dd>{assetEntity.location}</dd>
-          <dt>
             <span id="condition">Condition</span>
           </dt>
           <dd>{assetEntity.condition}</dd>
@@ -60,13 +54,19 @@ export const AssetDetail = () => {
               <TextFormat value={assetEntity.warrantyEndDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
             ) : null}
           </dd>
-          <dt>S OP</dt>
+          <dt>
+            <span id="description">Description</span>
+          </dt>
+          <dd>{assetEntity.description}</dd>
+          <dt>Location</dt>
+          <dd>{assetEntity.location ? assetEntity.location.name : ''}</dd>
+          <dt>Rule</dt>
           <dd>
-            {assetEntity.sOPS
-              ? assetEntity.sOPS.map((val, i) => (
+            {assetEntity.rules
+              ? assetEntity.rules.map((val, i) => (
                   <span key={val.id}>
-                    <a>{val.id}</a>
-                    {assetEntity.sOPS && i === assetEntity.sOPS.length - 1 ? '' : ', '}
+                    <a>{val.title}</a>
+                    {assetEntity.rules && i === assetEntity.rules.length - 1 ? '' : ', '}
                   </span>
                 ))
               : null}
@@ -76,11 +76,9 @@ export const AssetDetail = () => {
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Kembali</span>
         </Button>
         &nbsp;
-        {isAdmin && (
-          <Button tag={Link} to={`/asset/${assetEntity.id}/edit`} replace color="primary">
-            <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
-          </Button>
-        )}
+        <Button tag={Link} to={`/asset/${assetEntity.id}/edit`} replace color="primary">
+          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
+        </Button>
       </Col>
     </Row>
   );

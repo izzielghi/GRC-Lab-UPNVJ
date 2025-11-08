@@ -30,15 +30,8 @@
       "otherEntityName": "booking",
       "otherEntityRelationshipName": "room",
       "relationshipName": "booking",
-      "relationshipSide": "left",
-      "relationshipType": "one-to-many"
-    },
-    {
-      "otherEntityName": "usageLog",
-      "relationshipName": "room",
       "relationshipSide": "right",
-      "relationshipType": "one-to-many",
-      "relationshipValidateRules": "required"
+      "relationshipType": "many-to-many"
     }
   ],
   "searchEngine": "no",

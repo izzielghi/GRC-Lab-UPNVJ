@@ -13,19 +13,18 @@ import { getEntities, reset } from './room.reducer';
 
 export const Room = () => {
   const dispatch = useAppDispatch();
+
   const pageLocation = useLocation();
 
   const [paginationState, setPaginationState] = useState(
     overridePaginationStateWithQueryParams(getPaginationState(pageLocation, ITEMS_PER_PAGE, 'id'), pageLocation.search),
   );
+  const [sorting, setSorting] = useState(false);
 
-  const [refreshCounter, setRefreshCounter] = useState(0);
   const roomList = useAppSelector(state => state.room.entities);
   const loading = useAppSelector(state => state.room.loading);
   const links = useAppSelector(state => state.room.links);
   const updateSuccess = useAppSelector(state => state.room.updateSuccess);
-  const account = useAppSelector(state => state.authentication.account);
-  const isAdmin = account?.authorities?.includes('ROLE_ADMIN');
 
   const getAllEntities = () => {
     dispatch(
@@ -43,7 +42,7 @@ export const Room = () => {
       ...paginationState,
       activePage: 1,
     });
-    setRefreshCounter(count => count + 1);
+    dispatch(getEntities({}));
   };
 
   useEffect(() => {
@@ -58,7 +57,7 @@ export const Room = () => {
 
   useEffect(() => {
     getAllEntities();
-  }, [paginationState.activePage, paginationState.order, paginationState.sort, refreshCounter]);
+  }, [paginationState.activePage]);
 
   const handleLoadMore = () => {
     if ((window as any).pageYOffset > 0) {
@@ -69,13 +68,22 @@ export const Room = () => {
     }
   };
 
+  useEffect(() => {
+    if (sorting) {
+      getAllEntities();
+      setSorting(false);
+    }
+  }, [sorting]);
+
   const sort = p => () => {
-    resetAll();
-    setPaginationState(prevState => ({
-      ...prevState,
-      order: prevState.order === ASC ? DESC : ASC,
+    dispatch(reset());
+    setPaginationState({
+      ...paginationState,
+      activePage: 1,
+      order: paginationState.order === ASC ? DESC : ASC,
       sort: p,
-    }));
+    });
+    setSorting(true);
   };
 
   const handleSyncList = () => {
@@ -99,12 +107,10 @@ export const Room = () => {
           <Button className="me-2" color="info" onClick={handleSyncList} disabled={loading}>
             <FontAwesomeIcon icon="sync" spin={loading} /> Refresh list
           </Button>
-          {isAdmin && (
-            <Link to="/room/new" className="btn btn-primary jh-create-entity">
-              <FontAwesomeIcon icon="plus" />
-              &nbsp; Buat Room baru
-            </Link>
-          )}
+          <Link to="/room/new" className="btn btn-primary jh-create-entity" id="jh-create-entity" data-cy="entityCreateButton">
+            <FontAwesomeIcon icon="plus" />
+            &nbsp; Buat Room baru
+          </Link>
         </div>
       </h2>
       <div className="table-responsive">
@@ -112,7 +118,7 @@ export const Room = () => {
           dataLength={roomList ? roomList.length : 0}
           next={handleLoadMore}
           hasMore={paginationState.activePage - 1 < links.next}
-          loader={<div className="loader"></div>}
+          loader={<div className="loader">Loading ...</div>}
         >
           {roomList && roomList.length > 0 ? (
             <Table responsive>
@@ -153,21 +159,17 @@ export const Room = () => {
                         <Button tag={Link} to={`/room/${room.id}`} color="info" size="sm" data-cy="entityDetailsButton">
                           <FontAwesomeIcon icon="eye" /> <span className="d-none d-md-inline">Lihat</span>
                         </Button>
-                        {isAdmin && (
-                          <>
-                            <Button tag={Link} to={`/room/${room.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
-                              <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
-                            </Button>
-                            <Button
-                              onClick={() => (window.location.href = `/room/${room.id}/delete`)}
-                              color="danger"
-                              size="sm"
-                              data-cy="entityDeleteButton"
-                            >
-                              <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Hapus</span>
-                            </Button>
-                          </>
-                        )}
+                        <Button tag={Link} to={`/room/${room.id}/edit`} color="primary" size="sm" data-cy="entityEditButton">
+                          <FontAwesomeIcon icon="pencil-alt" /> <span className="d-none d-md-inline">Ubah</span>
+                        </Button>
+                        <Button
+                          onClick={() => (window.location.href = `/room/${room.id}/delete`)}
+                          color="danger"
+                          size="sm"
+                          data-cy="entityDeleteButton"
+                        >
+                          <FontAwesomeIcon icon="trash" /> <span className="d-none d-md-inline">Hapus</span>
+                        </Button>
                       </div>
                     </td>
                   </tr>

@@ -3,23 +3,20 @@
     "changelogDate": "20251007022325"
   },
   "applications": "*",
-  "documentation": "Item-item spesifik dalam Checklist Kepatuhan",
   "fields": [
     {
       "fieldName": "description",
       "fieldType": "String",
       "fieldValidateRules": ["required"]
-    },
-    {
-      "fieldName": "isCompliant",
-      "fieldType": "Boolean"
     }
   ],
   "name": "ChecklistItem",
   "pagination": "infinite-scroll",
   "relationships": [
     {
+      "otherEntityField": "name",
       "otherEntityName": "complianceChecklist",
+      "otherEntityRelationshipName": "checklistItem",
       "relationshipName": "checklist",
       "relationshipSide": "right",
       "relationshipType": "many-to-one",

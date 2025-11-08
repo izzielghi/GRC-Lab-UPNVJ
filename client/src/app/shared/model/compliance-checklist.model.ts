@@ -1,12 +1,10 @@
-import dayjs from 'dayjs';
+import { ISOP } from 'app/shared/model/sop.model';
 
 export interface IComplianceChecklist {
   id?: number;
   name?: string;
-  dateTime?: dayjs.Dayjs | null;
-  isCompleted?: boolean;
+  description?: string | null;
+  sop?: ISOP | null;
 }
 
-export const defaultValue: Readonly<IComplianceChecklist> = {
-  isCompleted: false,
-};
+export const defaultValue: Readonly<IComplianceChecklist> = {};

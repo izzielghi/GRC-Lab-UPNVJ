@@ -12,6 +12,8 @@ import { ComplianceChecklist } from './domain/compliance-checklist.entity';
 import { ChecklistItem } from './domain/checklist-item.entity';
 import { Room } from './domain/room.entity';
 import { Booking } from './domain/booking.entity';
+import { ComplianceRecord } from './domain/compliance-record.entity';
+import { RecordItem } from './domain/record-item.entity';
 // jhipster-needle-add-entity-to-ormconfig-imports - JHipster will add code here, do not remove
 
 function ormConfig(): TypeOrmModuleOptions {
@@ -79,6 +81,8 @@ function ormConfig(): TypeOrmModuleOptions {
       ChecklistItem,
       Room,
       Booking,
+      ComplianceRecord,
+      RecordItem,
       // jhipster-needle-add-entity-to-ormconfig-entities - JHipster will add code here, do not remove
     ],
     migrations: [

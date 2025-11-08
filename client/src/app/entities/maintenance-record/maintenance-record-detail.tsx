@@ -52,10 +52,10 @@ export const MaintenanceRecordDetail = () => {
               <TextFormat value={maintenanceRecordEntity.nextServiceDate} type="date" format={APP_LOCAL_DATE_FORMAT} />
             ) : null}
           </dd>
-          <dt>User</dt>
-          <dd>{maintenanceRecordEntity.user ? maintenanceRecordEntity.user.id : ''}</dd>
+          <dt>Maintainer</dt>
+          <dd>{maintenanceRecordEntity.maintainer ? maintenanceRecordEntity.maintainer.login : ''}</dd>
           <dt>Asset</dt>
-          <dd>{maintenanceRecordEntity.asset ? maintenanceRecordEntity.asset.id : ''}</dd>
+          <dd>{maintenanceRecordEntity.asset ? maintenanceRecordEntity.asset.name : ''}</dd>
         </dl>
         <Button tag={Link} to="/maintenance-record" replace color="info" data-cy="entityDetailsBackButton">
           <FontAwesomeIcon icon="arrow-left" /> <span className="d-none d-md-inline">Kembali</span>

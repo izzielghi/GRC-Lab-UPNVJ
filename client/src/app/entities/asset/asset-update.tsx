@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { mapIdList } from 'app/shared/util/entity-utils';
 import { useAppDispatch, useAppSelector } from 'app/config/store';
 
+import { getEntities as getRooms } from 'app/entities/room/room.reducer';
 import { getEntities as getSOPS } from 'app/entities/sop/sop.reducer';
 import { AssetCondition } from 'app/shared/model/enumerations/asset-condition.model';
 import { createEntity, getEntity, updateEntity } from './asset.reducer';
@@ -19,6 +20,7 @@ export const AssetUpdate = () => {
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
 
+  const rooms = useAppSelector(state => state.room.entities);
   const sOPS = useAppSelector(state => state.sOP.entities);
   const assetEntity = useAppSelector(state => state.asset.entity);
   const loading = useAppSelector(state => state.asset.loading);
@@ -35,6 +37,7 @@ export const AssetUpdate = () => {
       dispatch(getEntity(id));
     }
 
+    dispatch(getRooms({}));
     dispatch(getSOPS({}));
   }, []);
 
@@ -52,7 +55,8 @@ export const AssetUpdate = () => {
     const entity = {
       ...assetEntity,
       ...values,
-      sOPS: mapIdList(values.sOPS),
+      location: rooms.find(it => it.id.toString() === values.location?.toString()),
+      rules: mapIdList(values.rules),
     };
 
     if (isNew) {
@@ -68,7 +72,8 @@ export const AssetUpdate = () => {
       : {
           condition: 'GOOD',
           ...assetEntity,
-          sOPS: assetEntity?.sOPS?.map(e => e.id.toString()),
+          location: assetEntity?.location?.id,
+          rules: assetEntity?.rules?.map(e => e.id.toString()),
         };
 
   return (
@@ -107,7 +112,6 @@ export const AssetUpdate = () => {
                   required: { value: true, message: 'Inputan ini diperlukan.' },
                 }}
               />
-              <ValidatedField label="Location" id="asset-location" name="location" data-cy="location" type="text" />
               <ValidatedField label="Condition" id="asset-condition" name="condition" data-cy="condition" type="select">
                 {assetConditionValues.map(assetCondition => (
                   <option value={assetCondition} key={assetCondition}>
@@ -123,12 +127,23 @@ export const AssetUpdate = () => {
                 data-cy="warrantyEndDate"
                 type="date"
               />
-              <ValidatedField label="S OP" id="asset-sOP" data-cy="sOP" type="select" multiple name="sOPS">
+              <ValidatedField label="Description" id="asset-description" name="description" data-cy="description" type="text" />
+              <ValidatedField id="asset-location" name="location" data-cy="location" label="Location" type="select">
+                <option value="" key="0" />
+                {rooms
+                  ? rooms.map(otherEntity => (
+                      <option value={otherEntity.id} key={otherEntity.id}>
+                        {otherEntity.name}
+                      </option>
+                    ))
+                  : null}
+              </ValidatedField>
+              <ValidatedField label="Rule" id="asset-rule" data-cy="rule" type="select" multiple name="rules">
                 <option value="" key="0" />
                 {sOPS
                   ? sOPS.map(otherEntity => (
                       <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.id}
+                        {otherEntity.title}
                       </option>
                     ))
                   : null}

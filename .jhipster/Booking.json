@@ -5,6 +5,11 @@
   "applications": "*",
   "fields": [
     {
+      "fieldName": "title",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
       "fieldName": "startTime",
       "fieldType": "ZonedDateTime",
       "fieldValidateRules": ["required"]
@@ -22,12 +27,23 @@
     {
       "fieldName": "status",
       "fieldType": "BookingStatus",
-      "fieldValues": "PENDING,APPROVED,REJECTED,CANCELLED,COMPLETED"
+      "fieldValues": "PENDING,APPROVED,REJECTED,CANCELLED,IN_PROGRESS,COMPLETED,OVERDUE"
+    },
+    {
+      "fieldName": "notes",
+      "fieldType": "String"
     }
   ],
   "name": "Booking",
   "pagination": "infinite-scroll",
   "relationships": [
+    {
+      "otherEntityName": "complianceRecord",
+      "otherEntityRelationshipName": "booking",
+      "relationshipName": "complianceRecord",
+      "relationshipSide": "left",
+      "relationshipType": "one-to-one"
+    },
     {
       "otherEntityField": "login",
       "otherEntityName": "user",
@@ -39,11 +55,19 @@
     },
     {
       "otherEntityField": "name",
+      "otherEntityName": "asset",
+      "otherEntityRelationshipName": "booking",
+      "relationshipName": "asset",
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
+    },
+    {
+      "otherEntityField": "name",
       "otherEntityName": "room",
+      "otherEntityRelationshipName": "booking",
       "relationshipName": "room",
-      "relationshipSide": "right",
-      "relationshipType": "many-to-one",
-      "relationshipValidateRules": "required"
+      "relationshipSide": "left",
+      "relationshipType": "many-to-many"
     }
   ],
   "searchEngine": "no",

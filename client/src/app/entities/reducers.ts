@@ -7,6 +7,8 @@ import complianceChecklist from 'app/entities/compliance-checklist/compliance-ch
 import checklistItem from 'app/entities/checklist-item/checklist-item.reducer';
 import room from 'app/entities/room/room.reducer';
 import booking from 'app/entities/booking/booking.reducer';
+import complianceRecord from 'app/entities/compliance-record/compliance-record.reducer';
+import recordItem from 'app/entities/record-item/record-item.reducer';
 /* jhipster-needle-add-reducer-import - JHipster will add reducer here */
 
 const entitiesReducers = {
@@ -19,6 +21,8 @@ const entitiesReducers = {
   checklistItem,
   room,
   booking,
+  complianceRecord,
+  recordItem,
   /* jhipster-needle-add-reducer-combine - JHipster will add reducer here */
 };
 

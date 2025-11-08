@@ -18,9 +18,8 @@ import { BookingService } from '../../service/booking.service';
 import { Page, PageRequest } from '../../domain/base/pagination.entity';
 import { AuthGuard, RoleType, Roles, RolesGuard } from '../../security';
 import { HeaderUtil } from '../../client/header-util';
+import { Request } from '../../client/request';
 import { LoggingInterceptor } from '../../client/interceptors/logging.interceptor';
-import { Request } from 'express';
-import { User } from '../../domain/user.entity'; // <-- 1. TAMBAHKAN IMPORT INI
 
 @Controller('api/bookings')
 @UseGuards(AuthGuard, RolesGuard)
@@ -41,7 +40,7 @@ export class BookingController {
   })
   async getAll(@Req() req: Request): Promise<BookingDTO[]> {
     const pageRequest: PageRequest = new PageRequest(req.query.page, req.query.size, req.query.sort ?? 'id,ASC');
-    const [results, count] = await this.bookingService.findAndCount(req, {
+    const [results, count] = await this.bookingService.findAndCount({
       skip: +pageRequest.page * pageRequest.size,
       take: +pageRequest.size,
       order: pageRequest.sort.asOrder(),
@@ -71,8 +70,7 @@ export class BookingController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   async post(@Req() req: Request, @Body() bookingDTO: BookingDTO): Promise<BookingDTO> {
-    const user = req.user as User; // <-- 2. Lakukan type assertion di sini
-    const created = await this.bookingService.save(bookingDTO, user.login); // <-- 3. Gunakan user.login
+    const created = await this.bookingService.save(bookingDTO, req.user?.login);
     HeaderUtil.addEntityCreatedHeaders(req.res, 'Booking', created.id);
     return created;
   }
@@ -86,9 +84,8 @@ export class BookingController {
     type: BookingDTO,
   })
   async put(@Req() req: Request, @Body() bookingDTO: BookingDTO): Promise<BookingDTO> {
-    const user = req.user as User; // <-- Lakukan hal yang sama
     HeaderUtil.addEntityCreatedHeaders(req.res, 'Booking', bookingDTO.id);
-    return await this.bookingService.update(bookingDTO, user.login);
+    return await this.bookingService.update(bookingDTO, req.user?.login);
   }
 
   @Put('/:id')
@@ -100,9 +97,8 @@ export class BookingController {
     type: BookingDTO,
   })
   async putId(@Req() req: Request, @Body() bookingDTO: BookingDTO): Promise<BookingDTO> {
-    const user = req.user as User; // <-- Lakukan hal yang sama
     HeaderUtil.addEntityCreatedHeaders(req.res, 'Booking', bookingDTO.id);
-    return await this.bookingService.update(bookingDTO, user.login);
+    return await this.bookingService.update(bookingDTO, req.user?.login);
   }
 
   @Delete('/:id')
