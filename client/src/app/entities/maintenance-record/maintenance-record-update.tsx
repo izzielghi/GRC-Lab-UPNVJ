@@ -18,12 +18,12 @@ export const MaintenanceRecordUpdate = () => {
   const { id } = useParams<'id'>();
   const isNew = id === undefined;
 
-  const users = useAppSelector(state => state.userManagement.users);
   const assets = useAppSelector(state => state.asset.entities);
   const maintenanceRecordEntity = useAppSelector(state => state.maintenanceRecord.entity);
   const loading = useAppSelector(state => state.maintenanceRecord.loading);
   const updating = useAppSelector(state => state.maintenanceRecord.updating);
   const updateSuccess = useAppSelector(state => state.maintenanceRecord.updateSuccess);
+  const account = useAppSelector(state => state.authentication.account);
 
   const handleClose = () => {
     navigate('/maintenance-record');
@@ -34,7 +34,6 @@ export const MaintenanceRecordUpdate = () => {
       dispatch(getEntity(id));
     }
 
-    dispatch(getUsers({}));
     dispatch(getAssets({}));
   }, []);
 
@@ -55,7 +54,7 @@ export const MaintenanceRecordUpdate = () => {
     const entity = {
       ...maintenanceRecordEntity,
       ...values,
-      maintainer: users.find(it => it.id.toString() === values.maintainer?.toString()),
+      maintainer: account,
       asset: assets.find(it => it.id.toString() === values.asset?.toString()),
     };
 
@@ -71,7 +70,6 @@ export const MaintenanceRecordUpdate = () => {
       ? {}
       : {
           ...maintenanceRecordEntity,
-          maintainer: maintenanceRecordEntity?.maintainer?.id,
           asset: maintenanceRecordEntity?.asset?.id,
         };
 
@@ -121,23 +119,6 @@ export const MaintenanceRecordUpdate = () => {
                 data-cy="nextServiceDate"
                 type="date"
               />
-              <ValidatedField
-                id="maintenance-record-maintainer"
-                name="maintainer"
-                data-cy="maintainer"
-                label="Maintainer"
-                type="select"
-                required
-              >
-                <option value="" key="0" />
-                {users
-                  ? users.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.login}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
               <FormText>Inputan ini diperlukan.</FormText>
               <ValidatedField id="maintenance-record-asset" name="asset" data-cy="asset" label="Asset" type="select" required>
                 <option value="" key="0" />

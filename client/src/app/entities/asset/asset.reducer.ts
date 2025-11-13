@@ -18,8 +18,6 @@ const initialState: EntityState<IAsset> = {
 
 const apiUrl = 'api/assets';
 
-// Actions
-
 export const getEntities = createAsyncThunk(
   'asset/fetch_entity_list',
   async ({ page, size, sort }: IQueryParams) => {
@@ -91,12 +89,8 @@ export const AssetSlice = createEntitySlice({
         const { data, headers } = action.payload;
         const links = parseHeaderForLinks(headers.link);
 
-        // Ambil nomor halaman dari argumen action
         const page = action.meta.arg.page;
 
-        // Kita GANTI data jika ini halaman 0 (dari tabel)
-        // ATAU jika halaman tidak ditentukan (undefined, dari dropdown).
-        // Kita HANYA MENAMBAH jika halaman > 0 (untuk infinite scroll).
         const shouldReplaceData = page === 0 || page === undefined;
 
         return {
@@ -128,5 +122,4 @@ export const AssetSlice = createEntitySlice({
 
 export const { reset } = AssetSlice.actions;
 
-// Reducer
 export default AssetSlice.reducer;

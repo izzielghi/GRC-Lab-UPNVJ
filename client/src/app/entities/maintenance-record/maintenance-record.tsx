@@ -157,31 +157,30 @@ export const MaintenanceRecord = () => {
               <tbody>
                 {maintenanceRecordList.map((maintenanceRecord, i) => (
                   <tr key={`entity-${i}`} data-cy="entityTable">
-                    <td>
-                      <Button tag={Link} to={`/maintenance-record/${maintenanceRecord.id}`} color="link" size="sm">
-                        {maintenanceRecord.id}
-                      </Button>
-                    </td>
+                    <td>{maintenanceRecord.id}</td>
                     <td>
                       {maintenanceRecord.date ? (
                         <TextFormat type="date" value={maintenanceRecord.date} format={APP_LOCAL_DATE_FORMAT} />
                       ) : null}
                     </td>
                     <td>{maintenanceRecord.description}</td>
-                    <td>{maintenanceRecord.cost}</td>
+                    <td>
+                      {maintenanceRecord.cost
+                        ? Number(maintenanceRecord.cost).toLocaleString('id-ID', {
+                            style: 'currency',
+                            currency: 'IDR',
+                            minimumFractionDigits: 0,
+                            maximumFractionDigits: 2,
+                          })
+                        : ''}
+                    </td>
                     <td>
                       {maintenanceRecord.nextServiceDate ? (
                         <TextFormat type="date" value={maintenanceRecord.nextServiceDate} format={APP_LOCAL_DATE_FORMAT} />
                       ) : null}
                     </td>
                     <td>{maintenanceRecord.maintainer ? maintenanceRecord.maintainer.login : ''}</td>
-                    <td>
-                      {maintenanceRecord.asset ? (
-                        <Link to={`/asset/${maintenanceRecord.asset.id}`}>{maintenanceRecord.asset.name}</Link>
-                      ) : (
-                        ''
-                      )}
-                    </td>
+                    <td>{maintenanceRecord.asset ? maintenanceRecord.asset.name : ''}</td>
                     <td className="text-end">
                       <div className="btn-group flex-btn-group-container">
                         <Button
