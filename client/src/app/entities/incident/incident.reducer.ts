@@ -91,11 +91,15 @@ export const IncidentSlice = createEntitySlice({
         const { data, headers } = action.payload;
         const links = parseHeaderForLinks(headers.link);
 
+        const page = action.meta.arg.page;
+
+        const shouldReplaceData = page === 0 || page === undefined;
+
         return {
           ...state,
           loading: false,
           links,
-          entities: loadMoreDataWhenScrolled(state.entities, data, links),
+          entities: shouldReplaceData ? data : [...state.entities, ...data],
           totalItems: parseInt(headers['x-total-count'], 10),
         };
       })

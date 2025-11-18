@@ -5,8 +5,6 @@ import { ValidatedField, ValidatedForm } from 'react-jhipster';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 import { useAppDispatch, useAppSelector } from 'app/config/store';
-
-import { getUsers } from 'app/modules/administration/user-management/user-management.reducer';
 import { getEntities as getAssets } from 'app/entities/asset/asset.reducer';
 import { createEntity, getEntity, updateEntity } from './maintenance-record.reducer';
 

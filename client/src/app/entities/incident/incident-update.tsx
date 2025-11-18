@@ -27,6 +27,7 @@ export const IncidentUpdate = () => {
   const updating = useAppSelector(state => state.incident.updating);
   const updateSuccess = useAppSelector(state => state.incident.updateSuccess);
   const incidentTypeValues = Object.keys(IncidentType);
+  const account = useAppSelector(state => state.authentication.account);
 
   const handleClose = () => {
     navigate('/incident');
@@ -37,7 +38,6 @@ export const IncidentUpdate = () => {
       dispatch(getEntity(id));
     }
 
-    dispatch(getUsers({}));
     dispatch(getAssets({}));
   }, []);
 
@@ -56,7 +56,7 @@ export const IncidentUpdate = () => {
     const entity = {
       ...incidentEntity,
       ...values,
-      reporter: users.find(it => it.id.toString() === values.reporter?.toString()),
+      reporter: account,
       asset: assets.find(it => it.id.toString() === values.asset?.toString()),
     };
 
@@ -76,7 +76,6 @@ export const IncidentUpdate = () => {
           type: 'DAMAGE_TO_ASSET',
           ...incidentEntity,
           date: convertDateTimeFromServer(incidentEntity.date),
-          reporter: incidentEntity?.reporter?.id,
           asset: incidentEntity?.asset?.id,
         };
 
@@ -141,17 +140,6 @@ export const IncidentUpdate = () => {
                 data-cy="mitigationAction"
                 type="text"
               />
-              <ValidatedField id="incident-reporter" name="reporter" data-cy="reporter" label="Reporter" type="select" required>
-                <option value="" key="0" />
-                {users
-                  ? users.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.login}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <FormText>Inputan ini diperlukan.</FormText>
               <ValidatedField id="incident-asset" name="asset" data-cy="asset" label="Asset" type="select">
                 <option value="" key="0" />
                 {assets
