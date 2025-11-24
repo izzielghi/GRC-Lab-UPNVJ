@@ -14,6 +14,7 @@ import { getEntities as getAssets } from 'app/entities/asset/asset.reducer';
 import { getEntities as getRooms } from 'app/entities/room/room.reducer';
 import { BookingStatus } from 'app/shared/model/enumerations/booking-status.model';
 import { createEntity, getEntity, updateEntity } from './booking.reducer';
+import { hasAnyAuthority } from 'app/shared/auth/private-route';
 
 export const BookingUpdate = () => {
   const dispatch = useAppDispatch();
@@ -32,6 +33,9 @@ export const BookingUpdate = () => {
   const updating = useAppSelector(state => state.booking.updating);
   const updateSuccess = useAppSelector(state => state.booking.updateSuccess);
   const bookingStatusValues = Object.keys(BookingStatus);
+  const authorities = useAppSelector(state => state.authentication.account.authorities);
+  const isAdmin = hasAnyAuthority(authorities, ['ROLE_ADMIN']);
+  const account = useAppSelector(state => state.authentication.account);
 
   const handleClose = () => {
     navigate('/booking');
@@ -58,21 +62,23 @@ export const BookingUpdate = () => {
     if (values.id !== undefined && typeof values.id !== 'number') {
       values.id = Number(values.id);
     }
-    values.startTime = convertDateTimeToServer(values.startTime);
-    values.endTime = convertDateTimeToServer(values.endTime);
 
     const entity = {
       ...bookingEntity,
       ...values,
-      complianceRecord: complianceRecords.find(it => it.id.toString() === values.complianceRecord?.toString()),
-      user: users.find(it => it.id.toString() === values.user?.toString()),
-      assets: mapIdList(values.assets),
-      rooms: mapIdList(values.rooms),
+      startTime: convertDateTimeToServer(values.startTime),
+      endTime: convertDateTimeToServer(values.endTime),
+      complianceRecord: values.complianceRecord ? { id: values.complianceRecord } : null,
+      assets: bookingEntity?.assets?.map(e => (e && e.id ? e.id.toString() : null)).filter(Boolean),
+      rooms: bookingEntity?.rooms?.map(e => (e && e.id ? e.id.toString() : null)).filter(Boolean),
+      status: isNew ? BookingStatus.PENDING : values.status,
     };
 
     if (isNew) {
+      entity.user = account;
       dispatch(createEntity(entity));
     } else {
+      delete entity.user;
       dispatch(updateEntity(entity));
     }
   };
@@ -82,14 +88,13 @@ export const BookingUpdate = () => {
       ? {
           startTime: displayDefaultDateTime(),
           endTime: displayDefaultDateTime(),
+          status: 'PENDING',
         }
       : {
-          status: 'PENDING',
           ...bookingEntity,
           startTime: convertDateTimeFromServer(bookingEntity.startTime),
           endTime: convertDateTimeFromServer(bookingEntity.endTime),
           complianceRecord: bookingEntity?.complianceRecord?.id,
-          user: bookingEntity?.user?.id,
           assets: bookingEntity?.assets?.map(e => e.id.toString()),
           rooms: bookingEntity?.rooms?.map(e => e.id.toString()),
         };
@@ -152,13 +157,16 @@ export const BookingUpdate = () => {
                   required: { value: true, message: 'Inputan ini diperlukan.' },
                 }}
               />
-              <ValidatedField label="Status" id="booking-status" name="status" data-cy="status" type="select">
-                {bookingStatusValues.map(bookingStatus => (
-                  <option value={bookingStatus} key={bookingStatus}>
-                    {bookingStatus}
-                  </option>
-                ))}
-              </ValidatedField>
+              {isAdmin && (
+                <ValidatedField label="Status" id="booking-status" name="status" data-cy="status" type="select">
+                  <option value="" key="0" />
+                  {bookingStatusValues.map(bookingStatus => (
+                    <option value={bookingStatus} key={bookingStatus}>
+                      {bookingStatus}
+                    </option>
+                  ))}
+                </ValidatedField>
+              )}
               <ValidatedField label="Notes" id="booking-notes" name="notes" data-cy="notes" type="text" />
               <ValidatedField
                 id="booking-complianceRecord"
@@ -176,17 +184,6 @@ export const BookingUpdate = () => {
                     ))
                   : null}
               </ValidatedField>
-              <ValidatedField id="booking-user" name="user" data-cy="user" label="User" type="select" required>
-                <option value="" key="0" />
-                {users
-                  ? users.map(otherEntity => (
-                      <option value={otherEntity.id} key={otherEntity.id}>
-                        {otherEntity.login}
-                      </option>
-                    ))
-                  : null}
-              </ValidatedField>
-              <FormText>Inputan ini diperlukan.</FormText>
               <ValidatedField label="Asset" id="booking-asset" data-cy="asset" type="select" multiple name="assets">
                 <option value="" key="0" />
                 {assets
